@@ -45,7 +45,7 @@ const GenerateQrPage = () => {
 
   return (
     <>
-      <div className="h-[calc(100%-16px)] w-[calc(100%-16px)] bg-red-50 rounded-sm shadow-sm m-2">
+      <div className="h-[calc(100%-16px)] w-[calc(100%)] bg-red-50 rounded-sm shadow-sm">
         <div className="w-[100%] md:w-[50vw] bg-red-200">
           <Card className="w-[350px]">
             <CardHeader>
@@ -120,6 +120,14 @@ const GenerateQrPage = () => {
               bgColor="#ffffff" // Màu nền (tùy chọn)
               fgColor="#000000" // Màu QR code (tùy chọn)
             />
+          </div>
+        </div>
+
+        <div className="bg-red-100 h-[200px] w-[100%]">
+          <div className="w-[100%] overflow-x-auto">
+            <table className="w-[2000px] h-[100px] bg-blue-100">
+
+            </table>
           </div>
         </div>
       </div>

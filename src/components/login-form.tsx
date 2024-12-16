@@ -10,47 +10,54 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 
+import darkHsvLogo from "../assets/images/logo-hsvina-dark.png";
+import { ModeToggle } from "./mode-toggle";
+
 export function LoginForm() {
   return (
-    <Card className="mx-auto max-w-sm">
+    <Card className="mx-auto w-full md:max-w-sm py-10">
       <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
+        {/* <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>
           Enter your email below to login to your account
-        </CardDescription>
+        </CardDescription> */}
+        <div className="flex justify-center">
+          <img src={darkHsvLogo} alt="Your Logo" className="h-[80px]" />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="username">User ID</Label>
             <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
+              id="username"
+              type="text"
+              className="h-12"
+              placeholder=""
               required
             />
           </div>
           <div className="grid gap-2">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
-              <Link to="#" className="ml-auto inline-block text-sm underline">
-                Forgot your password?
-              </Link>
             </div>
-            <Input id="password" type="password" required />
+            <Input id="password" type="password" className="h-12" required />
           </div>
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full bg-blue-500">
             Login
           </Button>
-          <Button variant="outline" className="w-full">
-            Login with Google
-          </Button>
         </div>
-        <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link to="#" className="underline">
+        <div className="mt-4 text-center text-sm flex justify-between">
+          <Link to="#" className="underline inline-block">
             Sign up
           </Link>
+          <Link to="#" className="inline-block text-sm underline">
+            Forgot your password?
+          </Link>
+        </div>
+
+        <div className="mt-4">
+          <ModeToggle />
         </div>
       </CardContent>
     </Card>

@@ -6,6 +6,7 @@ import LoginPage from "./pages/login/login.tsx";
 import Layout from "./components/layout.tsx";
 import GenerateQrPage from "./pages/qr-management/generate-qr.tsx";
 import ScanQr from "./pages/qr-management/scan-qr.tsx";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +35,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
-  <RouterProvider router={router} />
+  <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <RouterProvider router={router} />
+  </ThemeProvider>
+
   //   <App />
   // </StrictMode>
 );

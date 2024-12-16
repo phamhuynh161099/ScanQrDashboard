@@ -45,7 +45,7 @@ const GenerateQrPage = () => {
 
   return (
     <>
-      <div className="h-[calc(100%-16px)] w-[calc(100%)] bg-red-50 rounded-sm shadow-sm">
+      <div className="h-[calc(100%)] w-[calc(100%)] bg-red-50 rounded-sm shadow-sm">
         <div className="w-[100%] md:w-[50vw] bg-red-200">
           <Card className="w-[350px]">
             <CardHeader>
@@ -123,8 +123,8 @@ const GenerateQrPage = () => {
           </div>
         </div>
 
-        <div className="bg-red-100 h-[200px] w-[100%]">
-          <div className="w-[100%] overflow-x-auto">
+        <div className="bg-red-100 h-[500px] w-[100%]">
+          <div className="w-full overflow-x-auto">
             <table className="w-[2000px] h-[100px] bg-blue-100">
 
             </table>

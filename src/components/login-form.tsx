@@ -8,12 +8,29 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import darkHsvLogo from "../assets/images/logo-hsvina-dark.png";
 import { ModeToggle } from "./mode-toggle";
+import authApi from "@/apis/auth.api";
 
 export function LoginForm() {
+  const navigate = useNavigate()
+
+  const handleLogin = async() => {
+    try {
+      const response = await authApi.login({username: 'emilys',password : 'emilyspass'});
+      console.log('response',response);
+      navigate('/admin/generate-qr');
+
+    } catch (error) {
+      
+    } finally {
+
+    }
+  }
+
+
   return (
     <Card className="mx-auto w-full md:max-w-sm py-10">
       <CardHeader>
@@ -43,7 +60,7 @@ export function LoginForm() {
             </div>
             <Input id="password" type="password" className="h-12" required />
           </div>
-          <Button type="submit" className="w-full bg-blue-500">
+          <Button type="submit" className="w-full bg-blue-500" onClick={handleLogin}>
             Login
           </Button>
         </div>

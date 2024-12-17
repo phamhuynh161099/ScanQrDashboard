@@ -1,3 +1,4 @@
+import authApi from "@/apis/auth.api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 
 const GenerateQrPage = () => {
@@ -42,6 +43,24 @@ const GenerateQrPage = () => {
     link.download = "qrcode.png";
     link.click();
   };
+
+
+  useEffect(() => {
+    try {
+      const fetchMe = async () => {
+        return await authApi.me();
+      }
+
+      const response = fetchMe();
+      console.log('response',response)
+
+    } catch (error) {
+      
+    } finally {
+
+    }
+  })
+  
 
   return (
     <>

@@ -162,11 +162,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {/* <TeamSwitcher teams={data.teams} /> */}
-        <div className="mt-4 flex justify-center text-2xl font-bold relative">
-          <p>HS VINA</p>
+        <div className="mt-4 flex justify-center text-2xl font-bold relative group-data-[collapsible=icon]:hidden">
+          <p className="">HS VINA</p>
           <ChevronLeft
-            className="absolute top-0 right-0 h-8 w-8 bg-gray-700 rounded-lg"
+            className="absolute top-0 right-0 h-8 w-8 bg-slate-200 dark:bg-gray-700 rounded-lg"
             onClick={() => toggleSidebar()}
           />
         </div>

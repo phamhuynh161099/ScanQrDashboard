@@ -35,3 +35,4 @@ const ScanQr = () => {
 };
 
 export default ScanQr;
+

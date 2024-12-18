@@ -15,7 +15,9 @@ export const clearLS = () => {
   localStorage.removeItem('refresh_token')
   localStorage.removeItem('profile')
   const clearLSEvent = new Event('clearLS')
-  LocalStorageEventTarget.dispatchEvent(clearLSEvent)
+  LocalStorageEventTarget.dispatchEvent(clearLSEvent);
+
+  console.log('emit evt auth')
 }
 
 export const getAccessTokenFromLS = () => localStorage.getItem('access_token') || ''

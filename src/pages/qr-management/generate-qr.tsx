@@ -55,7 +55,7 @@ const GenerateQrPage = () => {
       console.log('response',response)
 
     } catch (error) {
-      
+      console.log('error',error)
     } finally {
 
     }

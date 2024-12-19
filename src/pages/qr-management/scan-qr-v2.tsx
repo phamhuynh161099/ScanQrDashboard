@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { BrowserMultiFormatReader, DecodeHintType, Result, BarcodeFormat } from '@zxing/library';
-import "../../assets/scan-qr-v2.css"
 
 const ScanQrV2 = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -65,57 +64,6 @@ const ScanQrV2 = () => {
     }
   }, [scanning, selectedDeviceId]);
 
-
-  const overlayRef = useRef<HTMLDivElement>(null); // Thêm ref cho overlay
-
-  const calculateVideoSize = () => {
-    if (videoRef.current && overlayRef.current) {
-      const videoWidth = videoRef.current.videoWidth;
-      const videoHeight = videoRef.current.videoHeight;
-      const videoAspectRatio = videoWidth / videoHeight;
-
-      const containerWidth = overlayRef.current.offsetWidth;
-      const containerHeight = overlayRef.current.offsetHeight;
-      const containerAspectRatio = containerWidth / containerHeight;
-      
-      let newVideoWidth = containerWidth;
-      let newVideoHeight = containerHeight;
-
-      if (videoAspectRatio > containerAspectRatio) {
-        newVideoHeight = containerWidth / videoAspectRatio;
-      } else {
-        newVideoWidth = containerHeight * videoAspectRatio;
-      }
-
-      videoRef.current.style.width = `${newVideoWidth}px`;
-      videoRef.current.style.height = `${newVideoHeight}px`;
-      
-      // Căn giữa video trong container
-      videoRef.current.style.position = 'absolute';
-      videoRef.current.style.top = '50%';
-      videoRef.current.style.left = '50%';
-      videoRef.current.style.transform = 'translate(-50%, -50%)';
-      videoRef.current.style.objectFit = 'cover';
-    }
-  };
-
-  useEffect(() => {
-    // Tính toán kích thước video khi component mount và khi kích thước cửa sổ thay đổi
-    calculateVideoSize();
-    window.addEventListener('resize', calculateVideoSize);
-
-    return () => {
-      window.removeEventListener('resize', calculateVideoSize);
-    };
-  }, []);
-
-  useEffect(() => {
-    // Tính toán lại kích thước video khi scanning thay đổi
-    if(scanning) {
-      calculateVideoSize();
-    }
-  }, [scanning])
-
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDeviceId(event.target.value);
     setScanning(true); // Bắt đầu quét khi chọn camera mới
@@ -153,14 +101,10 @@ const ScanQrV2 = () => {
             ))}
           </select>
         </div>
-        <div className='w-full md:w-1/2 relative' ref={overlayRef}>
-          <video ref={videoRef} className='rounded-lg' style={{ display: scanning ? 'block' : 'none' }}></video>
-            {/* Khung quét */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-64 h-64 border-4 border-green-500"></div> {/* Thay đổi kích thước ở đây */}
-            </div>
+        <div className='w-full md:w-1/2 relative'>
+          <video ref={videoRef} width="100%" className='rounded-lg' style={{ display: scanning ? 'block' : 'none' }}></video>
           {/* Nút điều khiển */}
-          <div className="mt-4 flex gap-4 absolute bottom-[-50px] left-0 w-full">
+          <div className="mt-4 flex gap-4 w-full absolute bottom-[-50px] left-0">
             {!scanning && (
                 <button
                 className="w-1/2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"

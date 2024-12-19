@@ -1,42 +1,41 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserMultiFormatReader } from '@zxing/browser';
+import { BrowserMultiFormatReader } from '@zxing/library';
 
 const ScanQrV2 = () => {
-  const [result, setResult] = useState('');
-  const videoRef = useRef<any>(null);
-  const codeReaderRef = useRef(new BrowserMultiFormatReader());
+  const videoRef = useRef(null);
 
   useEffect(() => {
+    const codeReader = new BrowserMultiFormatReader();
+
+    codeReader.getVideoInputDevices()
+      .then((videoInputDevices) => {
+        const selectedDeviceId = videoInputDevices[0].deviceId;
+
+        codeReader.decodeFromVideoDevice(selectedDeviceId, videoRef.current, (result, err) => {
+          if (result) {
+            console.log('Kết quả quét mã:', result.getText());
+            // Xử lý kết quả ở đây
+            alert('Kết quả quét mã: ' + result.getText());
+            codeReader.reset();
+          }
+          // Sửa lỗi ở đây, không cần dùng ZXing.NotFoundException
+          if (err) {
+            console.error('Lỗi khi quét mã:', err);
+          }
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
     return () => {
-    //   codeReaderRef.current.; // Reset the code reader when the component unmounts
+      codeReader.reset();
     };
   }, []);
 
-  const handleScan = async () => {
-    try {
-      const devices = await BrowserMultiFormatReader.listVideoInputDevices();
-      if (devices.length > 0) {
-        const selectedDeviceId = devices[0].deviceId; // Select the first camera
-
-        codeReaderRef.current.decodeFromVideoDevice(selectedDeviceId, videoRef.current, (result, error, controls) => {
-          if (result) {
-            setResult(result.getText());
-          }
-          if (error) {
-            // console.error(error); // Log the error, but don't throw it
-          }
-        });
-      }
-    } catch (err) {
-      console.error("Error during scanning:", err);
-    }
-  };
-
   return (
     <div>
-      <button onClick={handleScan}>Start Scan</button>
-      <video ref={videoRef} width="300" height="200"></video>
-      <p>Scanned Code: {result}</p>
+      <video ref={videoRef} width="600" height="400" style={{ border: '1px solid gray' }}></video>
     </div>
   );
 };

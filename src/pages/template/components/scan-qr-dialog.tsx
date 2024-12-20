@@ -11,6 +11,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   BrowserMultiFormatReader,
@@ -93,8 +101,13 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
     }
   }, [scanning, selectedDeviceId]);
 
-  const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedDeviceId(event.target.value);
+  // const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setSelectedDeviceId(event.target.value);
+  //   setScanning(true); // Bắt đầu quét khi chọn camera mới
+  // };
+
+  const handleDeviceChange = (value: string) => {
+    setSelectedDeviceId(value);
     setScanning(true); // Bắt đầu quét khi chọn camera mới
   };
 
@@ -116,17 +129,17 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
     <>
       <Dialog open={open} onOpenChange={handleOnChangeOpen}>
         <DialogContent
-          className="max-w-full rounded-lg  md:w-[500px]"
+          className="max-w-full rounded-lg md:w-[500px] p-3"
           onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogHeader>
             <DialogTitle>Scan In</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-1">
-            <div className="container mx-auto p-4">
+          <div className="grid gap-4">
+            <div className="container mx-auto p-1">
               <div className="flex flex-col items-center">
                 <div className="w-full md:w-1/2 mb-4">
-                  <select
+                  {/* <select
                     className="w-full p-2 border border-gray-300 rounded"
                     onChange={handleDeviceChange}
                     value={selectedDeviceId}
@@ -136,7 +149,29 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
                         {device.label || `Camera ${device.deviceId}`}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
+
+                  <Label className="text-sm font-semibold" htmlFor="type_location">
+                    Select Camera
+                  </Label>
+                  <Select
+                    onValueChange={handleDeviceChange}
+                    value={selectedDeviceId}
+                  >
+                    <SelectTrigger id="type_location">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {devices.map((device: MediaDeviceInfo) => (
+                        <SelectItem
+                          key={device.deviceId}
+                          value={device.deviceId}
+                        >
+                          {device.label || `Camera ${device.deviceId}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="w-full md:w-1/2 relative">
                   <video

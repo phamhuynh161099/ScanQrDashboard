@@ -11,6 +11,7 @@ import { ScanQrCode, Trash2 } from "lucide-react";
 
 import { useState } from "react";
 import ScanQrDialog from "./components/scan-qr-dialog";
+import ScanQrV2Dialog from "./components/scan-qr-v2-dialog";
 
 const ScanInPage = () => {
 
@@ -194,7 +195,8 @@ const ScanInPage = () => {
         {/* MTRL List */}
       </div>
 
-      <ScanQrDialog open={openScanQrDialog} haldleOpenScanQrDialog={haldleOpenScanQrDialog}/>
+      {/* <ScanQrDialog open={openScanQrDialog} haldleOpenScanQrDialog={haldleOpenScanQrDialog}/> */}
+      <ScanQrV2Dialog open={openScanQrDialog} haldleOpenScanQrDialog={haldleOpenScanQrDialog}/>
     </>
   );
 };

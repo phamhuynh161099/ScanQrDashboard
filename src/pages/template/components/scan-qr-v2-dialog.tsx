@@ -27,13 +27,17 @@ import {
   BarcodeFormat,
 } from "@zxing/library";
 import { MonitorStop, TvMinimalPlay } from "lucide-react";
+import * as Jimp from 'jimp';
 
 interface ScanQrDialogProps {
   open: boolean;
   haldleOpenScanQrDialog: (value: any) => void;
 }
 
-const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
+const ScanQrV2Dialog = ({
+  open,
+  haldleOpenScanQrDialog,
+}: ScanQrDialogProps) => {
   const handleOnChangeOpen = (value: any) => {
     haldleOpenScanQrDialog(value);
   };
@@ -112,9 +116,89 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
     setScanning(true); // Bắt đầu quét khi chọn camera mới
   };
 
+  const decodeFromCroppedImage = async (
+    imageData: string,
+    x: number,
+    y: number,
+    w: number,
+    h: number
+  ) => {
+    const image = await Jimp.Jimp.read(imageData);
+    const croppedImage = image.crop({x, y, w, h});
+    const buffer = await croppedImage.getBuffer(Jimp.JimpMime.jpeg);
+  
+    const img = new Image();
+    const blob = new Blob([buffer], { type: Jimp.JimpMime.jpeg });
+    const url = URL.createObjectURL(blob);
+    img.src = url;
+  
+    await new Promise((resolve) => {
+      img.onload = resolve;
+    });
+  
+    URL.revokeObjectURL(url);
+  
+    const result = await codeReader.current.decodeFromImage(img);
+    return result;
+  };
+
   const handleStartScan = () => {
     setScanning(true);
     setShowResult(false); // Ẩn kết quả cũ
+    navigator.mediaDevices
+      .getUserMedia({ video: { deviceId: selectedDeviceId } })
+      .then((stream) => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.onloadedmetadata = () => {
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+            const overlay = document.querySelector(
+              ".overlay"
+            ) as HTMLDivElement;
+
+            const scan = () => {
+              if (!videoRef.current || !context) return;
+
+              context.drawImage(
+                videoRef.current,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+              );
+              const imageData = canvas.toDataURL("image/jpeg");
+
+              // Lấy vị trí và kích thước của khung ngắm
+              const rect = overlay.getBoundingClientRect();
+              const videoRect = videoRef.current.getBoundingClientRect();
+              const x = rect.left - videoRect.left;
+              const y = rect.top - videoRect.top;
+              const width = rect.width;
+              const height = rect.height;
+
+              decodeFromCroppedImage(imageData, x, y, width, height)
+                .then((result: Result | undefined) => {
+                  if (result) {
+                    const resultText = result.getText();
+                    console.log("Kết quả quét mã:", resultText);
+                    setScanResult(resultText);
+                    setShowResult(true); // Hiển thị kết quả
+                    setScanning(false); // Dừng quét
+                    stream.getTracks().forEach((track) => track.stop()); // Dừng stream camera
+                  } else if (scanning) {
+                    requestAnimationFrame(scan); // Tiếp tục quét nếu chưa tìm thấy
+                  }
+                })
+                .catch((err) => console.error("Lỗi khi quét mã:", err));
+            };
+            if (scanning) {
+              requestAnimationFrame(scan); // Bắt đầu quét
+            }
+          };
+        }
+      })
+      .catch((err) => console.error("Lỗi khi truy cập camera:", err));
   };
 
   const handleStopScan = () => {
@@ -125,8 +209,6 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
     navigator.clipboard.writeText(scanResult);
     alert("Đã sao chép kết quả vào clipboard!");
   };
-
- 
 
   return (
     <>
@@ -142,8 +224,10 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
             <div className="container mx-auto p-1">
               <div className="flex flex-col items-center">
                 <div className="w-full md:w-1/2 mb-4">
-                  
-                  <Label className="text-sm font-semibold" htmlFor="type_location">
+                  <Label
+                    className="text-sm font-semibold"
+                    htmlFor="type_location"
+                  >
                     Select Camera
                   </Label>
                   <Select
@@ -179,7 +263,7 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
                         className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex gap-1 items-center"
                         onClick={handleStartScan}
                       >
-                       <TvMinimalPlay /> Start Scan
+                        <TvMinimalPlay /> Start Scan
                       </button>
                     )}
                     {scanning && (
@@ -226,4 +310,4 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
   );
 };
 
-export default ScanQrDialog;
+export default ScanQrV2Dialog;

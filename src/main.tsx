@@ -9,6 +9,7 @@ import ScanQr from "./pages/qr-management/scan-qr.tsx";
 import { ThemeProvider } from "@/components/theme-provider";
 import ScanQrV2 from "./pages/qr-management/scan-qr-v2.tsx";
 import ScanInPage from "./pages/template/scan-in.tsx";
+import MtrlManagementPage from "./pages/template/mtrl-management.tsx";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
       { path: "scan-qr", element: <ScanQr /> },
       { path: "scan-qr-v2", element: <ScanQrV2 /> },
       { path: "scan-in", element: <ScanInPage /> },
+      { path: "mtrl-management", element: <MtrlManagementPage /> },
     ],
   },
 ]);

@@ -41,6 +41,17 @@ const MtrlManagementV2Page = () => {
       responsive: 0,
       headerFilter: "input",
     }, //never hide this column
+    {
+      title: "",
+      formatter: "rowSelection",
+      titleFormatter: "rowSelection",
+      hozAlign: "center",
+      headerSort: false,
+      cellClick: function (e, cell) {
+        console.log("cell", cell.getRow());
+        cell.getRow().toggleSelect();
+      },
+    },
     { title: "Location", field: "location", width: 150 },
     { title: "Gender", field: "gender", width: 150, responsive: 2 }, //hide this column first
     { title: "Favourite Color", field: "col", width: 150 },
@@ -208,23 +219,30 @@ const MtrlManagementV2Page = () => {
 
   return (
     <>
-      <ReactTabulator
-        onRef={(ref) => (ref = ref)}
-        data={tableData}
-        columns={columns}
-        events={{
-          rowClick: handleRowClick,
-        }}
-        layout="fitColumns" // Tùy chọn layout
-        options={{
-          pagination: "local", // Phân trang
-          paginationSize: 5, // Số hàng trên mỗi trang
-          movableColumns: true,
-          movableRows: true,
-          dataTree: true,
-          //   dataTreeStartExpanded: true,
-        }}
-      />
+      <div className="min-h-[100%] w-full p-2">
+        <div className="min-h-[400px] h-[70vh] w-full border bg-red-50 rounded-xl shadow-lg relative overflow-x-auto">
+          <ReactTabulator
+            onRef={(ref) => (ref = ref)}
+            data={tableData}
+            columns={columns}
+            events={
+              {
+                //   rowClick: handleRowClick,
+              }
+            }
+            layout="fitColumns" // Tùy chọn layout
+            options={{
+              pagination: "local", // Phân trang
+              paginationSize: 5, // Số hàng trên mỗi trang
+              movableColumns: true,
+              movableRows: true,
+              dataTree: true,
+              height: "100%",
+              //   dataTreeStartExpanded: true,
+            }}
+          />
+        </div>
+      </div>
     </>
   );
 };

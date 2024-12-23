@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import ScanQrV2 from "./pages/qr-management/scan-qr-v2.tsx";
 import ScanInPage from "./pages/template/scan-in.tsx";
 import MtrlManagementPage from "./pages/template/mtrl-management.tsx";
+import MtrlManagementV2Page from "./pages/template/mtrl-mamagement-v2.tsx";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
       { path: "scan-qr-v2", element: <ScanQrV2 /> },
       { path: "scan-in", element: <ScanInPage /> },
       { path: "mtrl-management", element: <MtrlManagementPage /> },
+      { path: "mtrl-management-v2", element: <MtrlManagementV2Page /> },
     ],
   },
 ]);

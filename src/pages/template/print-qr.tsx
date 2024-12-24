@@ -5,10 +5,11 @@ import {
   reactFormatter,
   ReactTabulator,
 } from "react-tabulator";
-import "tabulator-tables/dist/css/tabulator_midnight.min.css"; // Chọn một theme tabulator phù hợp
-// Hoặc import trực tiếp theme CSS mong muốn từ thư mục dist/css
+// theme midnight
+import "tabulator-tables/dist/css/tabulator_midnight.min.css";
 
-import JsBarcode from "jsbarcode";
+// import JsBarcode from "jsbarcode";
+import QRCode from "qrcode";
 
 function SimpleButton(props: any) {
   const rowData = props.cell._cell.row.data;
@@ -26,7 +27,7 @@ function fakeApiCall(delayInSeconds = 20) {
 }
 
 const PrintQrPage = () => {
-  let tableRef = useRef(null);
+  let tableRef = useRef<any>(null);
   const [tableData, setTableData] = useState([
     {
       name: "Jamie Newhart",
@@ -34,17 +35,11 @@ const PrintQrPage = () => {
       gender: "male",
       col: "green",
       dob: "14/05/1985",
+      barcode: "123456789-004",
     },
   ]);
 
   const columns: ColumnDefinition[] = [
-    {
-      title: "Name",
-      field: "name",
-      width: 200,
-      responsive: 0,
-      headerFilter: "input",
-    }, //never hide this column
     {
       title: "",
       formatter: "rowSelection",
@@ -55,6 +50,20 @@ const PrintQrPage = () => {
         console.log("cell", cell.getRow());
         cell.getRow().toggleSelect();
       },
+    },
+    {
+      title: "Bar Code",
+      field: "barcode",
+      width: 200,
+      responsive: 0,
+      headerFilter: "input",
+    },
+    {
+      title: "Name",
+      field: "name",
+      width: 200,
+      responsive: 0,
+      headerFilter: "input",
     },
     { title: "Location", field: "location", width: 150 },
     { title: "Gender", field: "gender", width: 150, responsive: 2 }, //hide this column first
@@ -109,20 +118,6 @@ const PrintQrPage = () => {
       sorter: "date",
       width: 150,
     },
-    {
-      title: "Date Of Birth",
-      field: "dob",
-      hozAlign: "center",
-      sorter: "date",
-      width: 150,
-    },
-    {
-      title: "Date Of Birth",
-      field: "dob",
-      hozAlign: "center",
-      sorter: "date",
-      width: 150,
-    },
   ];
 
   const callApi = async () => {
@@ -133,7 +128,7 @@ const PrintQrPage = () => {
   };
 
   useEffect(() => {
-    const response = callApi();
+    callApi();
   }, []);
 
   const data = [
@@ -143,6 +138,7 @@ const PrintQrPage = () => {
       gender: "male",
       col: "red",
       dob: "14/04/1984",
+      barcode: "123456789-001",
     },
     {
       name: "Jamie Newhart",
@@ -150,6 +146,7 @@ const PrintQrPage = () => {
       gender: "male",
       col: "green",
       dob: "14/05/1985",
+      barcode: "123456789-002",
     },
     {
       name: "Gemma Jane",
@@ -157,6 +154,7 @@ const PrintQrPage = () => {
       gender: "female",
       col: "red",
       dob: "22/05/1982",
+      barcode: "123456789-003",
     },
     {
       name: "James Newman",
@@ -164,6 +162,103 @@ const PrintQrPage = () => {
       gender: "male",
       col: "red",
       dob: "22/03/1998",
+      barcode: "123456789-004",
+    },
+    {
+      name: "Jamie Newhart",
+      location: "India",
+      gender: "male",
+      col: "green",
+      dob: "14/05/1985",
+      barcode: "123456789-005",
+    },
+    {
+      name: "Gemma Jane",
+      location: "China",
+      gender: "female",
+      col: "red",
+      dob: "22/05/1982",
+      barcode: "123456789-006",
+    },
+    {
+      name: "James Newman",
+      location: "Japan",
+      gender: "male",
+      col: "red",
+      dob: "22/03/1998",
+      barcode: "123456789-007",
+    },
+    {
+      name: "Jamie Newhart",
+      location: "India",
+      gender: "male",
+      col: "green",
+      dob: "14/05/1985",
+      barcode: "123456789-008",
+    },
+    {
+      name: "Gemma Jane",
+      location: "China",
+      gender: "female",
+      col: "red",
+      dob: "22/05/1982",
+      barcode: "123456789-009",
+    },
+    {
+      name: "James Newman",
+      location: "Japan",
+      gender: "male",
+      col: "red",
+      dob: "22/03/1998",
+      barcode: "123456789-010",
+    },
+    {
+      name: "Jamie Newhart",
+      location: "India",
+      gender: "male",
+      col: "green",
+      dob: "14/05/1985",
+      barcode: "123456789-002",
+    },
+    {
+      name: "Gemma Jane",
+      location: "China",
+      gender: "female",
+      col: "red",
+      dob: "22/05/1982",
+      barcode: "123456789-003",
+    },
+    {
+      name: "James Newman",
+      location: "Japan",
+      gender: "male",
+      col: "red",
+      dob: "22/03/1998",
+      barcode: "123456789-004",
+    },
+    {
+      name: "Jamie Newhart",
+      location: "India",
+      gender: "male",
+      col: "green",
+      dob: "14/05/1985",
+      barcode: "123456789-002",
+    },
+    {
+      name: "Gemma Jane",
+      location: "China",
+      gender: "female",
+      col: "red",
+      dob: "22/05/1982",
+      barcode: "123456789-003",
+    },
+    {
+      name: "James Newman",
+      location: "Japan",
+      gender: "male",
+      col: "red",
+      dob: "22/03/1998",
+      barcode: "123456789-004",
     },
   ];
 
@@ -176,14 +271,17 @@ const PrintQrPage = () => {
   const getSelectedRows = () => {
     console.log("selectedData", tableRef.current);
     if (tableRef.current) {
-      const selectedData = tableRef.current.getSelectedData();
-      console.log(selectedData);
+      let listCode = [];
+      const selectedData = [...tableRef.current.current.getSelectedData()];
+      listCode = selectedData.map((value: any) => value.barcode);
+      setCodeList([...listCode]);
+      console.log(selectedData, listCode);
     }
   };
 
-  // print bar code
-  let codeList = ["CODE128-40034579-01"];
-  const barcodeContainerRef = useRef(null);
+  //* print bar code
+  const [codeList, setCodeList] = useState<any[]>([]);
+  const barcodeContainerRef = useRef<any>(null);
 
   useEffect(() => {
     if (barcodeContainerRef.current) {
@@ -191,44 +289,105 @@ const PrintQrPage = () => {
     }
   }, [codeList]);
 
+  // function generateBarcodes(codes: any) {
+  //   if (!barcodeContainerRef.current) return;
+  //   barcodeContainerRef.current.innerHTML = "";
+
+  //   codes.forEach((code: any) => {
+  //     const barcodeDiv = document.createElement("div");
+  //     barcodeDiv.classList.add("barcode-item");
+
+  //     // Tạo canvas cho QR code
+  //     const qrCanvas = document.createElement("canvas");
+  //     qrCanvas.id = `qrcode-${code}`;
+
+  //     const codeText = document.createElement("p");
+  //     codeText.textContent = code;
+  //     codeText.classList.add("code-text");
+
+  //     barcodeDiv.appendChild(qrCanvas);
+  //     barcodeDiv.appendChild(codeText);
+  //     barcodeContainerRef.current.appendChild(barcodeDiv);
+
+  //     let qrcodeValue = code;
+
+  //     // Tạo QR code sử dụng qrcode.js
+  //     QRCode.toCanvas(
+  //       qrCanvas,
+  //       qrcodeValue,
+  //       {
+  //         width: 200, // Kích thước QR code
+  //         margin: 2, // Margin
+  //         errorCorrectionLevel: "H", // Mức độ sửa lỗi (L, M, Q, H)
+  //       },
+  //       (error: any) => {
+  //         if (error) console.error(error);
+  //         console.log("success!");
+  //       }
+  //     );
+  //   });
+  // }
+
   function generateBarcodes(codes: any) {
     if (!barcodeContainerRef.current) return;
     barcodeContainerRef.current.innerHTML = "";
 
-    codes.forEach((code: any) => {
-      const barcodeDiv = document.createElement("div");
-      barcodeDiv.classList.add("barcode-item");
+    // Nhóm 2 code vào 1 mảng con
+    const groupedCodes = [];
+    for (let i = 0; i < codes.length; i += 2) {
+      groupedCodes.push(codes.slice(i, i + 2));
+    }
 
-      const barcodeImg = document.createElement("img");
-      barcodeImg.id = `barcode-${code}`;
+    groupedCodes.forEach((group: any) => {
+      const rowDiv = document.createElement("div");
+      rowDiv.classList.add(
+        "flex",
+        "flex-row",
+        "justify-between",
+        "mb-10",
+        "w-full",
+        "items-center",
+        "mx-auto"
+      ); // Tailwind classes for a row
 
-      const codeText = document.createElement("p");
-      codeText.textContent = code;
-      codeText.classList.add("code-text");
+      group.forEach((code: any) => {
+        const barcodeDiv = document.createElement("div");
+        barcodeDiv.classList.add(
+          "barcode-item",
+          "flex",
+          "flex-col",
+          "items-center",
+          "mx-2"
+        );
 
-      barcodeDiv.appendChild(barcodeImg);
-      barcodeDiv.appendChild(codeText);
-      barcodeContainerRef.current.appendChild(barcodeDiv);
+        // Tạo canvas cho QR code
+        const qrCanvas = document.createElement("canvas");
+        qrCanvas.id = `qrcode-${code}`;
 
-      // Tách type và value
+        const codeText = document.createElement("p");
+        codeText.textContent = code;
+        codeText.classList.add("code-text", "text-center");
 
-      const [format, value] = code.split("-");
-      let barcodeValue = value;
+        barcodeDiv.appendChild(qrCanvas);
+        barcodeDiv.appendChild(codeText);
+        rowDiv.appendChild(barcodeDiv);
 
-      if (!value) {
-        barcodeValue = format;
-      }
-
-      console.log("code", code);
-
-      JsBarcode(`#barcode-${code}`, barcodeValue, {
-        format: "CODE128",
-        lineColor: "#000",
-        width: 2,
-        height: 100,
-        displayValue: false,
-        margin: 10,
+        // Tạo QR code sử dụng qrcode.js
+        QRCode.toCanvas(
+          qrCanvas,
+          code,
+          {
+            width: 100, // Kích thước QR code
+            margin: 1, // Margin
+            errorCorrectionLevel: "H", // Mức độ sửa lỗi (L, M, Q, H)
+          },
+          (error: any) => {
+            if (error) console.error(error);
+            console.log("success!", code);
+          }
+        );
       });
+      barcodeContainerRef.current.appendChild(rowDiv);
     });
   }
 
@@ -241,7 +400,7 @@ const PrintQrPage = () => {
 
         <div className="min-h-[400px] h-[70vh] w-full border bg-red-50 rounded-xl shadow-lg relative overflow-x-auto">
           <ReactTabulator
-            onRef={(ref) => (tableRef = ref)}
+            onRef={(ref) => (tableRef.current = ref)}
             data={tableData}
             columns={columns}
             events={
@@ -257,17 +416,27 @@ const PrintQrPage = () => {
               movableRows: true,
               dataTree: true,
               height: "100%",
-              //   dataTreeStartExpanded: true,
             }}
           />
         </div>
 
-        <div>
+        {/* QR block */}
+        <div className="p-8">
           <style>{styles}</style>
-          <h1>Barcodes to Print:</h1>
-          <div ref={barcodeContainerRef} id="barcode-container"></div>
-          <button onClick={() => window.print()}>Print Barcodes</button>
+          <h1 className="text-2xl font-bold mb-4">QR Codes to Print:</h1>
+          <div
+            ref={barcodeContainerRef}
+            id="barcode-container"
+            className="flex flex-wrap justify-between"
+          ></div>
+          <button
+            onClick={() => window.print()}
+            className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Print QR Codes
+          </button>
         </div>
+        {/* QR block */}
       </div>
     </>
   );
@@ -288,19 +457,9 @@ const styles = `
       top: 0;
     }
     .barcode-item {
-      display: inline-block;
       margin-bottom: 20px;
       page-break-inside: avoid;
     }
-    .code-text {
-      text-align: center;
-    }
-  }
-
-  .barcode-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 `;
 

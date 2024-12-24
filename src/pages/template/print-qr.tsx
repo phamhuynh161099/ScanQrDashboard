@@ -10,6 +10,8 @@ import "tabulator-tables/dist/css/tabulator_midnight.min.css";
 
 // import JsBarcode from "jsbarcode";
 import QRCode from "qrcode";
+import PrintQrPreviewDialog from "./components/print-qr-preview-dialog";
+import { QrCode } from "lucide-react";
 
 function SimpleButton(props: any) {
   const rowData = props.cell._cell.row.data;
@@ -39,15 +41,21 @@ const PrintQrPage = () => {
     },
   ]);
 
+  const [openPrintQrPreviewDialog, setOpenPrintQrPreviewDialog] =
+    useState(false);
+  const haldleOpenPrintQrPreviewDialog = (value: any) => {
+    setOpenPrintQrPreviewDialog(value);
+  };
+
   const columns: ColumnDefinition[] = [
     {
       title: "",
       formatter: "rowSelection",
       titleFormatter: "rowSelection",
+      headerHozAlign : "center",
       hozAlign: "center",
       headerSort: false,
       cellClick: function (e, cell) {
-        console.log("cell", cell.getRow());
         cell.getRow().toggleSelect();
       },
     },
@@ -263,19 +271,16 @@ const PrintQrPage = () => {
   ];
 
   const handleRowClick = (e: any, row: any) => {
-    console.log("Row clicked:", row.getData()); // In ra dữ liệu của hàng được click
-    alert(`You clicked row with ID: ${row.getData().id}`); // Hiển thị thông báo
-    // Thực hiện các hành động khác khi click vào hàng...
+    console.log("Row clicked:", row.getData());
   };
 
   const getSelectedRows = () => {
-    console.log("selectedData", tableRef.current);
     if (tableRef.current) {
       let listCode = [];
-      const selectedData = [...tableRef.current.current.getSelectedData()];
+      const selectedData = tableRef.current.current.getSelectedData();
       listCode = selectedData.map((value: any) => value.barcode);
-      setCodeList([...listCode]);
-      console.log(selectedData, listCode);
+      setCodeList(listCode);
+      setOpenPrintQrPreviewDialog(true);
     }
   };
 
@@ -393,12 +398,15 @@ const PrintQrPage = () => {
 
   return (
     <>
-      <div className="min-h-[100%] w-full p-2">
+      <div className="min-h-[100%] w-full relative p-2">
         <div className="">
-          <Button onClick={getSelectedRows}>Print</Button>
+          <Button className="flex gap-2" onClick={getSelectedRows}>
+            <QrCode />
+            Generate QR
+          </Button>
         </div>
 
-        <div className="min-h-[400px] h-[70vh] w-full border bg-red-50 rounded-xl shadow-lg relative overflow-x-auto">
+        <div className="mt-2 min-h-[400px] h-[70vh] w-full border bg-red-50 rounded-xl shadow-lg relative overflow-x-auto">
           <ReactTabulator
             onRef={(ref) => (tableRef.current = ref)}
             data={tableData}
@@ -408,10 +416,10 @@ const PrintQrPage = () => {
                 //   rowClick: handleRowClick,
               }
             }
-            layout="fitColumns" // Tùy chọn layout
+            layout="fitColumns"
             options={{
               pagination: "local", // Phân trang
-              paginationSize: 5, // Số hàng trên mỗi trang
+              paginationSize: 20,
               movableColumns: true,
               movableRows: true,
               dataTree: true,
@@ -421,28 +429,17 @@ const PrintQrPage = () => {
         </div>
 
         {/* QR block */}
-        <div className="p-8">
-          <style>{styles}</style>
-          <h1 className="text-2xl font-bold mb-4">QR Codes to Print:</h1>
-          <div
-            ref={barcodeContainerRef}
-            id="barcode-container"
-            className="flex flex-wrap justify-between"
-          ></div>
-          <button
-            onClick={() => window.print()}
-            className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Print QR Codes
-          </button>
-        </div>
+        <PrintQrPreviewDialog
+          data={codeList}
+          open={openPrintQrPreviewDialog}
+          haldleOpenPrintQrPreviewDialog={haldleOpenPrintQrPreviewDialog}
+        />
         {/* QR block */}
       </div>
     </>
   );
 };
 
-// CSS (tùy chọn - có thể đưa vào file CSS riêng):
 const styles = `
   @media print {
     body * {

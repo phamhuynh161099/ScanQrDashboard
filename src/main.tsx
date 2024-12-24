@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
+import "./assets/custom-scrollbar.css";
 import LoginPage from "./pages/login/login.tsx";
 import Layout from "./components/layout.tsx";
 import GenerateQrPage from "./pages/qr-management/generate-qr.tsx";

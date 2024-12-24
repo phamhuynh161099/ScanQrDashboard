@@ -30,8 +30,8 @@ const Layout = () => {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset
-          className="max-w-full md:max-w-[calc(100vw-var(--sidebar-width)-20px)] 
-          md:group-has-[[data-collapsible=icon]]/sidebar-wrapper:max-w-[calc(100vw-var(--sidebar-width-icon)-20px)]"
+          className="max-w-full md:max-w-[calc(100vw-var(--sidebar-width)-10px)] 
+          md:group-has-[[data-collapsible=icon]]/sidebar-wrapper:max-w-[calc(100vw-var(--sidebar-width-icon)-10px)]"
         >
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b-2">
             <div className="flex items-center gap-2 px-4 w-full">

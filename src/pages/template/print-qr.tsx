@@ -440,24 +440,4 @@ const PrintQrPage = () => {
   );
 };
 
-const styles = `
-  @media print {
-    body * {
-      visibility: hidden;
-    }
-    #barcode-container, #barcode-container * {
-      visibility: visible;
-    }
-    #barcode-container {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
-    .barcode-item {
-      margin-bottom: 20px;
-      page-break-inside: avoid;
-    }
-  }
-`;
-
 export default PrintQrPage;

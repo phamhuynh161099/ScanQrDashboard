@@ -16,23 +16,24 @@ const PrintQrPreviewDialog = ({
   data,
   haldleOpenPrintQrPreviewDialog,
 }: ScanQrDialogProps) => {
-  const handleOnChangeOpen = (value: any) => {
-    haldleOpenPrintQrPreviewDialog(value);
-  };
 
   const barcodeContainerRef = useRef<any>(null);
-
   const [codeList, setCodeList] = useState<any[]>(data);
 
   useEffect(() => {
     if (data && data.length > 0) {
       console.log("run>>", data, codeList);
       setCodeList(data);
-      generateBarcodesV2(codeList);
+      generateBarcodes(codeList);
     }
   });
 
-  function generateBarcodesV2(codes: any) {
+  //* func close preview dialog
+  const handleOnChangeOpen = (value: any) => {
+    haldleOpenPrintQrPreviewDialog(value);
+  };
+
+  function generateBarcodes(codes: any) {
     if (!barcodeContainerRef.current) return;
     barcodeContainerRef.current.innerHTML = "";
 
@@ -61,10 +62,12 @@ const PrintQrPreviewDialog = ({
         "min-h-28",
         "bg-sky-400",
         "flex",
+        "flex-col",
+        "sm:flex-row",
         "border",
       );
 
-       // Tạo div con thứ nhất (chứa canvas)
+      // Tạo div con thứ nhất (chứa canvas)
       const canvasDiv = document.createElement("div");
       canvasDiv.classList.add("basis-1/2");
 
@@ -72,7 +75,7 @@ const PrintQrPreviewDialog = ({
       const qrCanvas = document.createElement("canvas");
       qrCanvas.id = `qrcode-${code}`;
       canvasDiv.appendChild(qrCanvas);
-      // Tạo QR code sử dụng qrcode.js
+      // Tạo QR code
       QRCode.toCanvas(
         qrCanvas,
         code,
@@ -86,80 +89,34 @@ const PrintQrPreviewDialog = ({
           console.log("success!", code);
         }
       );
+      mainDiv.appendChild(canvasDiv);
 
-      mainDiv.appendChild(canvasDiv)
+      // Tạo div con thứ nhất (chứa canvas)
+      const inforDiv = document.createElement("div");
+      inforDiv.classList.add(
+        "basis-1/2",
+        "p-1"
+      );
+
+      // Tạo tiêu đề h5
+      const title = document.createElement("h5");
+      title.classList.add(
+        "mb-2",
+        "text-xl",
+        "font-bold",
+        "tracking-tight",
+        "text-gray-900",
+        "dark:text-white"
+      );
+      title.textContent = `${code}`;
+      inforDiv.appendChild(title);
+      mainDiv.appendChild(inforDiv)
 
 
       barcodeContainerRef.current.appendChild(mainDiv);
     });
 
-    // barcodeContainerRef.current.appendChild(templateGroupBarcode);
   }
-
-  function generateBarcodes(codes: any) {
-    if (!barcodeContainerRef.current) return;
-    barcodeContainerRef.current.innerHTML = "";
-
-    const groupedCodes = [];
-    for (let i = 0; i < codes.length; i += 2) {
-      groupedCodes.push(codes.slice(i, i + 2));
-    }
-
-    groupedCodes.forEach((group: any) => {
-      const rowDiv = document.createElement("div");
-      rowDiv.classList
-        .add
-        // "row-print" // Add class row-print here
-        ();
-
-      group.forEach((code: any) => {
-        const barcodeDiv = document.createElement("div");
-        barcodeDiv.classList.add(
-          "barcode-item",
-          "flex",
-          "flex-col",
-          "items-center"
-          // "mx-2"
-        );
-
-        // Tạo canvas cho QR code
-        const qrCanvas = document.createElement("canvas");
-        qrCanvas.id = `qrcode-${code}`;
-
-        const codeText = document.createElement("p");
-        codeText.textContent = code;
-        codeText.classList.add("code-text", "text-center");
-
-        barcodeDiv.appendChild(qrCanvas);
-        barcodeDiv.appendChild(codeText);
-        rowDiv.appendChild(barcodeDiv);
-
-        // Tạo QR code sử dụng qrcode.js
-        QRCode.toCanvas(
-          qrCanvas,
-          code,
-          {
-            width: 250, // Kích thước QR code
-            margin: 1, // Margin
-            errorCorrectionLevel: "H", // Mức độ sửa lỗi (L, M, Q, H)
-          },
-          (error: any) => {
-            if (error) console.error(error);
-            console.log("success!", code);
-          }
-        );
-      });
-      barcodeContainerRef.current.appendChild(rowDiv);
-    });
-  }
-
-  // <div class="barcode-item flex flex-col items-center">
-  //   <canvas id="qrcode-123456789-001" height="250" width="250" style="height: 250px; width: 250px;"></canvas>
-  //   <p class="code-text text-center">123456789-001</p>
-  // </div>
-
-
-
 
   return (
     <>
@@ -184,14 +141,9 @@ const PrintQrPreviewDialog = ({
                 Print QR Codes
               </button>
             </div>
-            {/* <div
-              ref={barcodeContainerRef}
-              id="barcode-container"
-              className="mt-2 flex flex-wrap justify-between"
-            ></div> */}
 
             <div className="mt-2 grid grid-cols-2 gap-2" ref={barcodeContainerRef} id="barcode-container">
-              <div className="min-h-28 bg-sky-400 flex">
+              <div className="min-h-28 bg-sky-400 flex flex-col">
                 <div className="basis-1/2">
 
                 </div>
@@ -204,8 +156,6 @@ const PrintQrPreviewDialog = ({
                   </p>
                 </div>
               </div>
-
-             
 
             </div>
           </div>

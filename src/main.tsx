@@ -14,6 +14,7 @@ import MtrlManagementPage from "./pages/template/mtrl-management.tsx";
 import MtrlManagementV2Page from "./pages/template/mtrl-mamagement-v2.tsx";
 import PrintQrPage from "./pages/template/print-qr.tsx";
 import LocationManagementPage from "./pages/template/location-management.tsx";
+import BorrowReturnManagementPage from "./pages/template/borrow-return-management.tsx";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,7 @@ const router = createBrowserRouter([
       { path: "mtrl-management-v2", element: <MtrlManagementV2Page /> },
       { path: "print-qr", element: <PrintQrPage /> },
       { path: "location-management", element: <LocationManagementPage /> },
+      { path: "borrow-return-management", element: <BorrowReturnManagementPage /> },
     ],
   },
 ]);

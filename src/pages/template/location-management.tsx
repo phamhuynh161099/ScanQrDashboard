@@ -186,7 +186,7 @@ const LocationManagementPage = () => {
   return (
     <>
       <div className="min-h-[100%] w-full p-2">
-        <div className="w-full p-2 border bg-gray-200 rounded-xl shadow-lg flex justify-end">
+        <div className="w-full p-2 border rounded-xl shadow-lg flex justify-end">
           <Button
             className="bg-sky-400 hover:bg-sky-700 hover:text-white text-black flex gap-1"
             onClick={() => setOpenLocationAddDialog(true)}

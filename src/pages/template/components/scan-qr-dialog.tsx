@@ -48,6 +48,11 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
     new BrowserMultiFormatReader()
   ); // Dùng useRef để giữ instance của BrowserMultiFormatReader
 
+  /**
+   * isModeScan = true => Hien thi camera to scan
+   */
+  const [isModeScan, setIsModeScan] = useState<boolean>(false);
+
   useEffect(() => {
     codeReader.current
       .getVideoInputDevices()
@@ -126,97 +131,154 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
     alert("Đã sao chép kết quả vào clipboard!");
   };
 
- 
-
   return (
     <>
       <Dialog open={open} onOpenChange={handleOnChangeOpen}>
         <DialogContent
-          className="max-w-full rounded-lg md:w-[500px] p-3"
+          className="max-w-full max-h-[100vh] rounded-lg md:w-[500px] p-3"
           onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogHeader>
             <DialogTitle>Scan In</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4">
-            <div className="container mx-auto p-1">
-              <div className="flex flex-col items-center">
-                <div className="w-full md:w-1/2 mb-4">
-                  
-                  <Label className="text-sm font-semibold" htmlFor="type_location">
-                    Select Camera
-                  </Label>
-                  <Select
-                    onValueChange={handleDeviceChange}
-                    value={selectedDeviceId}
-                  >
-                    <SelectTrigger id="type_location">
-                      <SelectValue placeholder="No Camera To Select" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                      {devices.map((device: MediaDeviceInfo) => (
-                        <SelectItem
-                          key={device.deviceId}
-                          value={device.deviceId}
-                        >
-                          {device.label || `Camera ${device.deviceId}`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="w-full md:w-1/2 relative">
-                  <video
-                    ref={videoRef}
-                    width="100%"
-                    className="rounded-lg border-2"
-                    // style={{ display: scanning ? "block" : "none" }}
-                  ></video>
-                  {/* Nút điều khiển */}
-                  <div className="mt-4 flex gap-4 w-full bottom-[-50px] left-0">
-                    {!scanning && (
-                      <button
-                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex gap-1 items-center"
-                        onClick={handleStartScan}
-                      >
-                       <TvMinimalPlay /> Start Scan
-                      </button>
-                    )}
-                    {scanning && (
-                      <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex gap-1 items-center"
-                        onClick={handleStopScan}
-                      >
-                        <MonitorStop /> Stop Scan
-                      </button>
-                    )}
-                  </div>
-                </div>
 
-                {/* Kết quả */}
-                {showResult && (
-                  <div className="mt-4 w-full md:w-1/2">
-                    <h2 className="text-lg font-semibold mb-2">Kết quả:</h2>
-                    <div className="p-2 border border-gray-300 rounded bg-gray-100 break-words select-all">
-                      {scanResult}
+          <div className="overflow-y-auto max-h-[calc(100vh-200px)]">
+            {isModeScan && (
+              <>
+                <div className="grid gap-4">
+                  <div className="container mx-auto p-1">
+                    <div className="flex flex-col items-center">
+                      <div className="w-full  mb-4">
+                        <Label
+                          className="text-sm font-semibold"
+                          htmlFor="type_location"
+                        >
+                          Select Camera
+                        </Label>
+                        <Select
+                          onValueChange={handleDeviceChange}
+                          value={selectedDeviceId}
+                        >
+                          <SelectTrigger id="type_location">
+                            <SelectValue placeholder="No Camera To Select" />
+                          </SelectTrigger>
+                          <SelectContent position="popper">
+                            {devices.map((device: MediaDeviceInfo) => (
+                              <SelectItem
+                                key={device.deviceId}
+                                value={device.deviceId}
+                              >
+                                {device.label || `Camera ${device.deviceId}`}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="w-full  relative">
+                        <video
+                          ref={videoRef}
+                          width="100%"
+                          className="rounded-lg border-2"
+                          // style={{ display: scanning ? "block" : "none" }}
+                        ></video>
+                        {/* Nút điều khiển */}
+                        <div className="mt-4 flex gap-4 w-full bottom-[-50px] left-0">
+                          {!scanning && (
+                            <button
+                              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex gap-1 items-center"
+                              onClick={handleStartScan}
+                            >
+                              <TvMinimalPlay /> Start Scan
+                            </button>
+                          )}
+                          {scanning && (
+                            <button
+                              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex gap-1 items-center"
+                              onClick={handleStopScan}
+                            >
+                              <MonitorStop /> Stop Scan
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Kết quả */}
+                      {showResult && (
+                        <div className="mt-4 w-full ">
+                          <h2 className="text-lg font-semibold mb-2">
+                            Kết quả:
+                          </h2>
+                          <div className="p-2 border border-gray-300 rounded bg-gray-100 break-words select-all">
+                            {scanResult}
+                          </div>
+                          <button
+                            className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                            onClick={handleCopy}
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      )}
+                      {/* Thông báo lỗi */}
+                      {!scanning && devices.length === 0 && (
+                        <div className="mt-4 text-red-500">
+                          Không tìm thấy camera.
+                        </div>
+                      )}
                     </div>
-                    <button
-                      className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                      onClick={handleCopy}
-                    >
-                      Copy
-                    </button>
                   </div>
-                )}
-                {/* Thông báo lỗi */}
-                {!scanning && devices.length === 0 && (
-                  <div className="mt-4 text-red-500">
-                    Không tìm thấy camera.
+                </div>
+              </>
+            )}
+
+            {/* Khi Scan Success */}
+            {!isModeScan && (
+              <>
+                <div className="w-full">
+                  <p className="text-2xl font-semibold">Scan Result</p>
+
+                  <div className="w-full min-h-[100px] bg-gray-400 rounded-xl shadow-xl relative p-2">
+                    <div className="w-full rounded overflow-hidden shadow-lg">
+                      <img
+                        className="w-full h-40 bg-white"
+                        src="https://placehold.co/600x400"
+                        alt="Placeholder Image"
+                      />
+                      <div className="p-2">
+                        <div className="text-xl mb-1">
+                          Code: <span className="font-bold">202512000-004</span>
+                        </div>
+                        <p className="text-gray-700 text-base line-clamp-2">
+                          Lorem ipsum dolor sit amet, consectetur adipiscing
+                          elit. Phasellus ac pretium diam.
+                        </p>
+                      </div>
+                      <div className="p-2 pb-2">
+                        <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                          Not Available | Board AA-UV-1
+                        </span>
+
+                        {/* <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                          Available
+                        </span> */}
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
-            </div>
+
+                  <div className="mt-2 flex justify-center space-x-1">
+                    <Button onClick={() => setIsModeScan(true)}>
+                      Submit
+                    </Button>
+                    <Button onClick={() => setIsModeScan(true)}>
+                      Scan Again
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+            {/* Khi Scan Success */}
           </div>
+
           {/* <DialogFooter>
             <Button type="submit">Save changes</Button>
           </DialogFooter> */}

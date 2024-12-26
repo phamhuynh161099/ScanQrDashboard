@@ -27,7 +27,7 @@ const ScanInPage = () => {
           <div className="grid w-full gap-2">
             <div className="flex justify-between gap-2">
               <div className="flex flex-col space-y-1 basis-[45%]">
-                <Label className="text-sm" htmlFor="type_location">
+                <Label className="text-sm font-semibold" htmlFor="type_location">
                   Type Location
                 </Label>
                 <Select>
@@ -44,7 +44,7 @@ const ScanInPage = () => {
               </div>
 
               <div className="flex flex-col space-y-1 basis-[55%]">
-                <Label className="text-sm" htmlFor="val_po">
+                <Label className="text-sm font-semibold" htmlFor="val_po">
                   Code
                 </Label>
                 <Input id="" placeholder="" />
@@ -78,7 +78,7 @@ const ScanInPage = () => {
 
             <div className="w-full rounded overflow-hidden shadow-lg">
               <img
-                className="w-full h-16 bg-white"
+                className="w-full h-40 bg-white"
                 src="https://placehold.co/600x400"
                 alt="Placeholder Image"
               />
@@ -106,7 +106,7 @@ const ScanInPage = () => {
 
             <div className="w-full rounded overflow-hidden shadow-lg">
               <img
-                className="w-full h-16 bg-white"
+                className="w-full h-40 bg-white"
                 src="https://placehold.co/600x400"
                 alt="Placeholder Image"
               />
@@ -134,7 +134,7 @@ const ScanInPage = () => {
 
             <div className="w-full rounded overflow-hidden shadow-lg">
               <img
-                className="w-full h-16 bg-white"
+                className="w-full h-40 bg-white"
                 src="https://placehold.co/600x400"
                 alt="Placeholder Image"
               />
@@ -149,11 +149,7 @@ const ScanInPage = () => {
               </div>
               <div className="p-2 pb-2">
                 <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                  Borrow
-                </span>
-
-                <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                  Nguyễn Văn A
+                  Borrow | Nguyễn Văn A
                 </span>
               </div>
             </div>
@@ -166,7 +162,7 @@ const ScanInPage = () => {
 
             <div className="w-full rounded overflow-hidden shadow-lg">
               <img
-                className="w-full h-16 bg-white"
+                className="w-full h-40 bg-white"
                 src="https://placehold.co/600x400"
                 alt="Placeholder Image"
               />
@@ -181,11 +177,7 @@ const ScanInPage = () => {
               </div>
               <div className="p-2 pb-2">
                 <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                  Borrow
-                </span>
-
-                <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                  Nguyễn Văn B
+                  Borrow | Nguyễn Văn B
                 </span>
               </div>
             </div>

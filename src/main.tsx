@@ -40,14 +40,14 @@ const router = createBrowserRouter([
       { path: "generate-qr", element: <GenerateQrPage /> },
       { path: "scan-qr", element: <ScanQr /> },
       { path: "scan-qr-v2", element: <ScanQrV2 /> },
-      { path: "scan-in", element: <ScanInPage /> },
+      { path: "scan-in", element: <ScanInPage /> }, //-
       { path: "mtrl-management", element: <MtrlManagementPage /> },
-      { path: "mtrl-management-v2", element: <MtrlManagementV2Page /> },
-      { path: "print-qr", element: <PrintQrPage /> },
-      { path: "location-management", element: <LocationManagementPage /> },
-      { path: "borrow-return-management", element: <BorrowReturnManagementPage /> },
+      { path: "mtrl-management-v2", element: <MtrlManagementV2Page /> }, //-
+      { path: "print-qr", element: <PrintQrPage /> }, //-
+      { path: "location-management", element: <LocationManagementPage /> }, //-
+      { path: "borrow-return-management", element: <BorrowReturnManagementPage /> }, //-
       { path: "borrow-return-history-management", element: <BorrowReturnHistoryManagement /> },
-      { path: "mtrl-infor", element: <MtrlInforPage /> },
+      { path: "mtrl-infor", element: <MtrlInforPage /> }, //-
     ],
   },
 ]);

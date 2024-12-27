@@ -52,106 +52,47 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Scan",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Scan In",
+          url: "/admin/scan-in",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Scan Infor",
+          url: "/admin/mtrl-infor",
         },
         {
-          title: "Settings",
-          url: "#",
+          title: "Borrow/Return",
+          url: "/admin/borrow-return-management",
         },
       ],
     },
     {
-      title: "Models",
+      title: "Management",
       url: "#",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: "Material",
+          url: "/admin/mtrl-management-v2",
         },
         {
-          title: "Explorer",
-          url: "#",
+          title: "Loaction",
+          url: "/admin/location-management",
         },
         {
-          title: "Quantum",
-          url: "#",
+          title: "Borrow/Return History",
+          url: "/admin/borrow-return-history-management",
+        },
+        {
+          title: "Print QR",
+          url: "/admin/print-qr",
         },
       ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
     },
   ],
 };

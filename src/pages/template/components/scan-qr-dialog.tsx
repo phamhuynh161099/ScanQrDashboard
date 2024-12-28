@@ -237,7 +237,7 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
                 <div className="w-full">
                   <p className="text-2xl font-semibold">Scan Result</p>
 
-                  <div className="w-full min-h-[100px] bg-gray-400 rounded-xl shadow-xl relative p-2">
+                  <div className="w-full min-h-[100px] bg-green-400 rounded-xl shadow-xl relative p-2">
                     <div className="w-full rounded overflow-hidden shadow-lg">
                       <img
                         className="w-full h-40 bg-white"
@@ -255,7 +255,7 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
                       </div>
                       <div className="p-2 pb-2">
                         <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                          Not Available | Board AA-UV-1
+                          Available
                         </span>
 
                         {/* <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">

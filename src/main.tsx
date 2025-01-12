@@ -1,6 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import "./index.css";
 import "./assets/custom-scrollbar.css";
 import LoginPage from "./pages/login/login.tsx";
@@ -19,6 +23,11 @@ import BorrowReturnHistoryManagement from "./pages/template/borrow-return-histor
 import MtrlInforPage from "./pages/template/mtrl-infor.tsx";
 
 const router = createBrowserRouter([
+  {
+    index: true,
+    path: "",
+    element: <Navigate to="/admin/login" />,
+  },
   {
     path: "/admin/login",
     element: (
@@ -45,8 +54,14 @@ const router = createBrowserRouter([
       { path: "mtrl-management-v2", element: <MtrlManagementV2Page /> }, //-
       { path: "print-qr", element: <PrintQrPage /> }, //-
       { path: "location-management", element: <LocationManagementPage /> }, //-
-      { path: "borrow-return-management", element: <BorrowReturnManagementPage /> }, //-
-      { path: "borrow-return-history-management", element: <BorrowReturnHistoryManagement /> },
+      {
+        path: "borrow-return-management",
+        element: <BorrowReturnManagementPage />,
+      }, //-
+      {
+        path: "borrow-return-history-management",
+        element: <BorrowReturnHistoryManagement />,
+      },
       { path: "mtrl-infor", element: <MtrlInforPage /> }, //-
     ],
   },

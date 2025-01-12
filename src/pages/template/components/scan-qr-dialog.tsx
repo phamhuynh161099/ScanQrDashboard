@@ -31,9 +31,36 @@ import { MonitorStop, TvMinimalPlay } from "lucide-react";
 interface ScanQrDialogProps {
   open: boolean;
   haldleOpenScanQrDialog: (value: any) => void;
+  submitTakeNewMtrl2Location: (value: any) => void;
 }
 
-const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
+const fakeDataScan = [
+  {
+    mtrl_code: "88765432-001",
+    name: "Vải B",
+    isUsing: true,
+    location: "AA-01",
+  },
+  {
+    mtrl_code: "88765432-002",
+    name: "Vải B",
+    isUsing: true,
+    location: "AA-01",
+  },
+  {
+    mtrl_code: "24681357-001",
+    name: "Vải F",
+    isUsing: false,
+    location: "",
+  },
+];
+
+const ScanQrDialog = ({
+  open,
+  haldleOpenScanQrDialog,
+  submitTakeNewMtrl2Location,
+}: // submitTakeNewMtrl2Location,
+ScanQrDialogProps) => {
   const handleOnChangeOpen = (value: any) => {
     haldleOpenScanQrDialog(value);
   };
@@ -48,11 +75,15 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
     new BrowserMultiFormatReader()
   ); // Dùng useRef để giữ instance của BrowserMultiFormatReader
 
+  const [scannedData, setScannedData] = useState<any>();
   /**
    * isModeScan = true => Hien thi camera to scan
    */
-  const [isModeScan, setIsModeScan] = useState<boolean>(false);
+  const [isModeScan, setIsModeScan] = useState<boolean>(true);
 
+  /**
+   * Sẽ trigger khi isModeScan thay đổi
+   */
   useEffect(() => {
     codeReader.current
       .getVideoInputDevices()
@@ -61,7 +92,7 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
         if (videoInputDevices.length > 0) {
           setSelectedDeviceId(videoInputDevices[0].deviceId);
           // Bắt đầu quét tự động nếu tìm thấy camera
-          setScanning(true);
+          // setScanning(true);
         }
       })
       .catch((err: Error) => {
@@ -71,7 +102,7 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
     return () => {
       codeReader.current.reset();
     };
-  }, []);
+  }, [isModeScan]);
 
   useEffect(() => {
     if (scanning && selectedDeviceId && videoRef.current) {
@@ -94,8 +125,20 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
             const resultText = result.getText();
             console.log("Kết quả quét mã:", resultText);
             setScanResult(resultText);
-            setShowResult(true); // Hiển thị kết quả
+
+            // tam an chuc nang nay
+            //setShowResult(true); // Hiển thị kết quả
             setScanning(false); // Dừng quét
+
+            // chuyen qua mode show thong tin
+            setIsModeScan(false);
+
+            let _scannedData = fakeDataScan.find((val) => {
+              if (val.mtrl_code === resultText) {
+                return val;
+              }
+            });
+            setScannedData(_scannedData);
           }
           if (err) {
             console.error("Lỗi khi quét mã:", err);
@@ -105,7 +148,7 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
     } else {
       codeReader.current.reset();
     }
-  }, [scanning, selectedDeviceId]);
+  }, [isModeScan, scanning, selectedDeviceId]);
 
   // const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   //   setSelectedDeviceId(event.target.value);
@@ -141,7 +184,6 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
           <DialogHeader>
             <DialogTitle>Scan In</DialogTitle>
           </DialogHeader>
-
           <div className="overflow-y-auto max-h-[calc(100vh-200px)]">
             {isModeScan && (
               <>
@@ -232,53 +274,118 @@ const ScanQrDialog = ({ open, haldleOpenScanQrDialog }: ScanQrDialogProps) => {
             )}
 
             {/* Khi Scan Success */}
-            {!isModeScan && (
+            {!isModeScan && scannedData && (
               <>
-                <div className="w-full">
-                  <p className="text-2xl font-semibold">Scan Result</p>
+                {scannedData && scannedData.isUsing === true ? (
+                  <>
+                    {" "}
+                    <div className="w-full">
+                      <p className="text-2xl font-semibold">Scan Result</p>
 
-                  <div className="w-full min-h-[100px] bg-green-400 rounded-xl shadow-xl relative p-2">
-                    <div className="w-full rounded overflow-hidden shadow-lg">
-                      <img
-                        className="w-full h-40 bg-white"
-                        src="https://placehold.co/600x400"
-                        alt="Placeholder Image"
-                      />
-                      <div className="p-2">
-                        <div className="text-xl mb-1">
-                          Code: <span className="font-bold">202512000-004</span>
-                        </div>
-                        <p className="text-gray-700 text-base line-clamp-2">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit. Phasellus ac pretium diam.
-                        </p>
-                      </div>
-                      <div className="p-2 pb-2">
-                        <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                          Available
-                        </span>
+                      <div className="w-full min-h-[100px] bg-gray-400 rounded-xl shadow-xl relative p-2">
+                        <div className="w-full rounded overflow-hidden shadow-lg">
+                          <img
+                            className="w-full h-40 bg-white"
+                            src="https://placehold.co/600x400"
+                            alt="Placeholder Image"
+                          />
+                          <div className="p-2">
+                            <div className="text-xl mb-1">
+                              Code:{" "}
+                              <span className="font-bold">
+                                {scannedData.barcode}
+                              </span>
+                            </div>
+                            <p className="text-gray-700 text-base line-clamp-2">
+                              Lorem ipsum dolor sit amet, consectetur adipiscing
+                              elit. Phasellus ac pretium diam.
+                            </p>
+                          </div>
+                          <div className="p-2 pb-2">
+                            <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                              Not Available | {scannedData.location}
+                            </span>
 
-                        {/* <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                            {/* <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
                           Available
                         </span> */}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-2 flex justify-center space-x-1">
+                        {/* <Button onClick={() => setIsModeScan(true)}>
+                          Submit
+                        </Button> */}
+                        <Button
+                          onClick={() => {
+                            setScannedData(null);
+                            setIsModeScan(true);
+                          }}
+                        >
+                          Scan Again
+                        </Button>
                       </div>
                     </div>
-                  </div>
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    <div className="w-full">
+                      <p className="text-2xl font-semibold">Scan Result</p>
 
-                  <div className="mt-2 flex justify-center space-x-1">
-                    <Button onClick={() => setIsModeScan(true)}>
-                      Submit
-                    </Button>
-                    <Button onClick={() => setIsModeScan(true)}>
-                      Scan Again
-                    </Button>
-                  </div>
-                </div>
+                      <div className="w-full min-h-[100px] bg-green-400 rounded-xl shadow-xl relative p-2">
+                        <div className="w-full rounded overflow-hidden shadow-lg">
+                          <img
+                            className="w-full h-40 bg-white"
+                            src="https://placehold.co/600x400"
+                            alt="Placeholder Image"
+                          />
+                          <div className="p-2">
+                            <div className="text-xl mb-1">
+                              Code:{" "}
+                              <span className="font-bold">
+                                {scannedData.barcode}
+                              </span>
+                            </div>
+                            <p className="text-gray-700 text-base line-clamp-2">
+                              Lorem ipsum dolor sit amet, consectetur adipiscing
+                              elit. Phasellus ac pretium diam.
+                            </p>
+                          </div>
+                          <div className="p-2 pb-2">
+                            <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                              Available
+                            </span>
+
+                            {/* <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                          Available
+                        </span> */}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-2 flex justify-center space-x-1">
+                        <Button
+                          onClick={() => {
+                            console.log("scannedData", scannedData);
+                            submitTakeNewMtrl2Location(scannedData);
+                            handleOnChangeOpen(false);
+                          }}
+                        >
+                          Submit
+                        </Button>
+                        <Button onClick={() => setIsModeScan(true)}>
+                          Scan Again
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </>
             )}
             {/* Khi Scan Success */}
           </div>
-
           {/* <DialogFooter>
             <Button type="submit">Save changes</Button>
           </DialogFooter> */}

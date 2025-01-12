@@ -90,7 +90,7 @@ const LocationManagementPage = () => {
       responsive: 0,
       headerFilter: "input",
     },
-    { title: "Status", field: "status", width: 200 },
+    // { title: "Status", field: "status", width: 200 },
     { title: "Remark", field: "remark" },
     {
       title: "Action",

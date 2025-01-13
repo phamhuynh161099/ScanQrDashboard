@@ -307,7 +307,7 @@ ScanQrDialogProps) => {
                             <div className="text-xl mb-1">
                               Code:{" "}
                               <span className="font-bold">
-                                {scannedData.barcode}
+                                {scannedData.mtrl_code}
                               </span>
                             </div>
                             <p className="text-gray-700 text-base line-clamp-2">
@@ -359,7 +359,7 @@ ScanQrDialogProps) => {
                             <div className="text-xl mb-1">
                               Code:{" "}
                               <span className="font-bold">
-                                {scannedData.barcode}
+                                {scannedData.mtrl_code}
                               </span>
                             </div>
                             <p className="text-gray-700 text-base line-clamp-2">

@@ -102,13 +102,13 @@ const MtrlInforPage = () => {
                   </div>
 
                   <div className="mt-2">
-                    {mtrl.borowed && (
+                    {mtrl.borrowed && (
                       <Badge className="rounded-full py-1 bg-gray-500 font-bold text-sm">
                         Borrow | Pham Huynh
                       </Badge>
                     )}
 
-                    {!mtrl.borowed && (
+                    {!mtrl.borrowed && (
                       <Badge className="rounded-full py-1 bg-green-500 font-bold text-sm">
                         Available
                       </Badge>

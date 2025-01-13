@@ -40,18 +40,32 @@ const fakeDataScan = [
     name: "Vải B",
     isUsing: true,
     location: "AA-01",
+    borrowed: false,
+    user_borrow: "",
   },
   {
     mtrl_code: "88765432-002",
     name: "Vải B",
     isUsing: true,
     location: "AA-01",
+    borrowed: false,
+    user_borrow: "",
   },
   {
     mtrl_code: "24681357-001",
     name: "Vải F",
     isUsing: false,
     location: "",
+    borrowed: false,
+    user_borrow: "",
+  },
+  {
+    mtrl_code: "11223344-002",
+    name: "Vải D",
+    isUsing: true,
+    location: "BB-01",
+    borrowed: true,
+    user_borrow: "pham huynh",
   },
 ];
 

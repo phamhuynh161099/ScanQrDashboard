@@ -27,6 +27,20 @@ let fakeContainerLocation: any = {
       user_borrow: "pham huynh",
     },
   ],
+  "AA-01": [
+    {
+      name: "Vải B",
+      mtrl_code: "88765432-001",
+      borrowed: false,
+      user_borrow: "",
+    },
+    {
+      name: "Vải B",
+      mtrl_code: "88765432-002",
+      borrowed: false,
+      user_borrow: "",
+    },
+  ],
 };
 
 const ScanInPage = () => {
@@ -35,15 +49,15 @@ const ScanInPage = () => {
     setOpenScanQrDialog(value);
   };
 
+  const submitTakeNewMtrl2Location = (mtrl: any) => {
+    setListMtrl((prev: any) => [...prev, mtrl]);
+  };
+
   const [lstMtrl, setListMtrl] = useState<any>();
 
   const onBlurLocationCode = (event: React.FocusEvent<HTMLInputElement>) => {
     let findedLocation = fakeContainerLocation[event.target.value as string];
     setListMtrl(findedLocation);
-  };
-
-  const submitTakeNewMtrl2Location = (mtrl: any) => {
-    setListMtrl((prev: any) => [...prev, mtrl]);
   };
 
   return (

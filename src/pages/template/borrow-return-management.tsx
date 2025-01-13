@@ -13,14 +13,29 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowDownFromLine, ArrowUpFromLine, ScanQrCode } from "lucide-react";
 import { useState } from "react";
 import BorrowReturnScanQrDialog from "./components/borrow-scan-qr-dialog";
+import ScanQrDialog from "./components/scan-qr-dialog";
 
 const BorrowReturnManagementPage = () => {
   const [tabValue, setTabValue] = useState<any>("borrow_process");
-  const [openBorrowScanQrDialog, setOpenBorrowScanQrDialog] =
-    useState(false);
+  const [openBorrowScanQrDialog, setOpenBorrowScanQrDialog] = useState(false);
   const haldleOpenBorrowScanQrDialog = (value: any) => {
     setOpenBorrowScanQrDialog(value);
   };
+
+  /**
+   * Muon tam hàm, Nhớ phải xóa
+   */
+  //*********************************** */
+  const [openScanQrDialog, setOpenScanQrDialog] = useState(false);
+  const haldleOpenScanQrDialog = (value: any) => {
+    setOpenScanQrDialog(value);
+  };
+  const [mtrl, setMtrl] = useState<any>();
+
+  const submitTakeNewMtrl2Location = (mtrl: any) => {
+    setMtrl(mtrl);
+  };
+  //********************************** */
 
   return (
     <>
@@ -47,7 +62,8 @@ const BorrowReturnManagementPage = () => {
                       className="flex gap-1"
                       onClick={() => {
                         console.log(">>>Open Pop-up");
-                        setOpenBorrowScanQrDialog(true);
+                        setOpenScanQrDialog(true); // se phai xóa
+                        // setOpenBorrowScanQrDialog(true);
                       }}
                     >
                       <ScanQrCode />
@@ -115,7 +131,9 @@ const BorrowReturnManagementPage = () => {
                       className="flex gap-1"
                       onClick={() => {
                         console.log(">>>Open Pop-up");
-                        setOpenBorrowScanQrDialog(true);
+
+                        setOpenScanQrDialog(true); // se phai xóa
+                        // setOpenBorrowScanQrDialog(true);
                       }}
                     >
                       <ScanQrCode />
@@ -125,14 +143,18 @@ const BorrowReturnManagementPage = () => {
                   <CardDescription></CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-1">
-                  <div className="space-y-1">
-                    <Label htmlFor="code">Code</Label>
-                    <Input id="code" defaultValue="" disabled />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" defaultValue="" disabled />
-                  </div>
+                  {mtrl && (
+                    <>
+                      <div className="space-y-1">
+                        <Label htmlFor="code">Code</Label>
+                        <Input id="code" value={mtrl["mtrl_code"]} disabled />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="name">Name</Label>
+                        <Input id="name" value={mtrl["name"]} disabled />
+                      </div>
+                    </>
+                  )}
                 </CardContent>
                 <CardFooter></CardFooter>
               </Card>
@@ -147,24 +169,38 @@ const BorrowReturnManagementPage = () => {
                   <CardDescription></CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-1">
-                  <div className="space-y-1">
-                    <Label htmlFor="code">User Id</Label>
-                    <Input id="code" defaultValue="" disabled/>
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" defaultValue="" disabled/>
-                  </div>
+                  {mtrl && (
+                    <>
+                      <div className="space-y-1">
+                        <Label htmlFor="code">User Id</Label>
+                        <Input id="code" defaultValue="" disabled />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="name">Name</Label>
+                        <Input id="name" value={mtrl["user_borrow"]} disabled />
+                      </div>
 
-                  <div className="space-y-1">
-                    <Label htmlFor="name">Date Borrow</Label>
-                    <Input type="date" id="name" defaultValue="" disabled/>
-                  </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="name">Date Borrow</Label>
+                        <Input
+                          type="date"
+                          id="date_borrow"
+                          value={mtrl["borrow_date"]}
+                          disabled
+                        />
+                      </div>
 
-                  <div className="space-y-1">
-                    <Label htmlFor="name">ETC Return</Label>
-                    <Input type="date" id="name" defaultValue="" disabled/>
-                  </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="name">ETC Return</Label>
+                        <Input
+                          type="date"
+                          id="etc_return"
+                          value={mtrl["etc_return"]}
+                          disabled
+                        />
+                      </div>
+                    </>
+                  )}
                 </CardContent>
                 <CardFooter></CardFooter>
               </Card>
@@ -182,12 +218,22 @@ const BorrowReturnManagementPage = () => {
         {/*Scan Borrow Return */}
       </div>
 
-      {openBorrowScanQrDialog && (
+      {/* {openBorrowScanQrDialog && (
         <BorrowReturnScanQrDialog
           open={openBorrowScanQrDialog}
           haldleOpenBorrowScanQrDialog={
             haldleOpenBorrowScanQrDialog
           }
+        />
+      )} */}
+
+      {/* se xoa, nho phai xoa */}
+      {openScanQrDialog && (
+        <ScanQrDialog
+          parentPage="borrowReturnManagement"
+          open={openScanQrDialog}
+          submitTakeNewMtrl2Location={submitTakeNewMtrl2Location}
+          haldleOpenScanQrDialog={haldleOpenScanQrDialog}
         />
       )}
     </>

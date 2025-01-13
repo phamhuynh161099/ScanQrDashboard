@@ -43,6 +43,8 @@ const fakeDataScan = [
     location: "AA-01",
     borrowed: false,
     user_borrow: "",
+    borrow_date : '',
+    etc_return : ''
   },
   {
     mtrl_code: "88765432-002",
@@ -51,6 +53,8 @@ const fakeDataScan = [
     location: "AA-01",
     borrowed: false,
     user_borrow: "",
+    borrow_date : '',
+    etc_return : ''
   },
   {
     mtrl_code: "24681357-001",
@@ -59,6 +63,8 @@ const fakeDataScan = [
     location: "",
     borrowed: false,
     user_borrow: "",
+    borrow_date : '',
+    etc_return : ''
   },
   {
     mtrl_code: "11223344-002",
@@ -67,6 +73,8 @@ const fakeDataScan = [
     location: "BB-01",
     borrowed: true,
     user_borrow: "pham huynh",
+    borrow_date : '2024-12-24',
+    etc_return : '2025-01-28'
   },
 ];
 

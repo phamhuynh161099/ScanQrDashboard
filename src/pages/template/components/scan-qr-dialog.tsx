@@ -32,6 +32,7 @@ interface ScanQrDialogProps {
   open: boolean;
   haldleOpenScanQrDialog: (value: any) => void;
   submitTakeNewMtrl2Location: (value: any) => void;
+  parentPage: string;
 }
 
 const fakeDataScan = [
@@ -73,6 +74,7 @@ const ScanQrDialog = ({
   open,
   haldleOpenScanQrDialog,
   submitTakeNewMtrl2Location,
+  parentPage,
 }: // submitTakeNewMtrl2Location,
 ScanQrDialogProps) => {
   const handleOnChangeOpen = (value: any) => {
@@ -328,9 +330,18 @@ ScanQrDialogProps) => {
                       </div>
 
                       <div className="mt-2 flex justify-center space-x-1">
-                        {/* <Button onClick={() => setIsModeScan(true)}>
-                          Submit
-                        </Button> */}
+                        {parentPage !== "scanIn" && (
+                          <Button
+                            onClick={() => {
+                              console.log("scannedData", scannedData);
+                              submitTakeNewMtrl2Location(scannedData);
+                              handleOnChangeOpen(false);
+                            }}
+                          >
+                            Submit
+                          </Button>
+                        )}
+
                         <Button
                           onClick={() => {
                             setScannedData(null);

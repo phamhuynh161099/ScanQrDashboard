@@ -274,6 +274,7 @@ const MtrlInforPage = () => {
       {/* se xoa, nho phai xoa */}
       {openScanQrDialog && (
         <ScanQrDialog
+        parentPage="mtrlInfor"
           open={openScanQrDialog}
           submitTakeNewMtrl2Location={submitTakeNewMtrl2Location}
           haldleOpenScanQrDialog={haldleOpenScanQrDialog}

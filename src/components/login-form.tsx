@@ -1,43 +1,44 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 
+import authApi from "@/apis/auth.api";
 import darkHsvLogo from "../assets/images/logo-hsvina-dark.png";
 import { ModeToggle } from "./mode-toggle";
-import authApi from "@/apis/auth.api";
+import { useAppDispatch } from "@/app/hooks";
+import {
+  setAccessToken,
+  setProfile,
+  setRefreshToken,
+} from "@/features/auth/authSlice";
 
 export function LoginForm() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const handleLogin = async() => {
+  const handleLogin = async () => {
     try {
-      const response = await authApi.login({username: 'emilys',password : 'emilyspass'});
-      console.log('response',response);
-      navigate('/admin/generate-qr');
+      const response: any = await authApi.login({
+        username: "emilys",
+        password: "emilyspass",
+      });
 
+      console.log("response", response);
+      dispatch(setAccessToken(response.accessToken));
+      dispatch(setRefreshToken(response.refreshToken));
+      dispatch(setProfile(response));
+
+      navigate("/admin/scan-in");
     } catch (error) {
-      
     } finally {
-
     }
-  }
-
+  };
 
   return (
     <Card className="mx-auto w-full md:max-w-sm py-10">
       <CardHeader>
-        {/* <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription> */}
         <div className="flex justify-center">
           <img src={darkHsvLogo} alt="Your Logo" className="h-[80px]" />
         </div>
@@ -60,7 +61,11 @@ export function LoginForm() {
             </div>
             <Input id="password" type="password" className="h-12" required />
           </div>
-          <Button type="submit" className="w-full bg-blue-500" onClick={handleLogin}>
+          <Button
+            type="submit"
+            className="w-full bg-blue-500"
+            onClick={handleLogin}
+          >
             Login
           </Button>
         </div>

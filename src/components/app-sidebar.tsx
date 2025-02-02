@@ -63,7 +63,7 @@ const data = {
         },
         {
           title: "Scan Infor",
-          url: "/admin/mtrl-infor",
+          url: "/admin/scan-infor",
         },
         {
           title: "Borrow/Return",

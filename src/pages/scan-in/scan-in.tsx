@@ -375,7 +375,7 @@ const ScanInPage = () => {
       </div>
 
       <ScanQrDialog
-      parentPage="scanIn"
+        parentPage="scanIn"
         open={openScanQrDialog}
         submitTakeNewMtrl2Location={submitTakeNewMtrl2Location}
         haldleOpenScanQrDialog={haldleOpenScanQrDialog}

@@ -1,10 +1,14 @@
 import { StrictMode } from "react";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
 import { createRoot } from "react-dom/client";
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import "./index.css";
 import "./assets/custom-scrollbar.css";
 import LoginPage from "./pages/login/login.tsx";
@@ -21,6 +25,17 @@ import LocationManagementPage from "./pages/template/location-management.tsx";
 import BorrowReturnManagementPage from "./pages/template/borrow-return-management.tsx";
 import BorrowReturnHistoryManagement from "./pages/template/borrow-return-history-management.tsx";
 import MtrlInforPage from "./pages/template/mtrl-infor.tsx";
+
+// Tạo một QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 phút - Thời gian dữ liệu được coi là "fresh"
+      refetchOnWindowFocus: false, // Không tự động refetch khi focus lại window
+      retry: 2, // Thử lại 2 lần nếu fetch thất bại
+    },
+  },
+});
 
 const router = createBrowserRouter([
   {
@@ -70,9 +85,12 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
   <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </QueryClientProvider>
   </ThemeProvider>
-
   //   <App />
   // </StrictMode>
 );

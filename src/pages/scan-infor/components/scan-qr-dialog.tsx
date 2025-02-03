@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   BrowserMultiFormatReader,
   DecodeHintType,
@@ -27,6 +27,10 @@ import {
   BarcodeFormat,
 } from "@zxing/library";
 import { MonitorStop, TvMinimalPlay } from "lucide-react";
+
+import QrScanner from "qr-scanner";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface ScanQrDialogProps {
   open: boolean;
@@ -89,113 +93,84 @@ ScanQrDialogProps) => {
     haldleOpenScanQrDialog(value);
   };
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string>("");
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [scanResult, setScanResult] = useState<string>("");
-  const [scanning, setScanning] = useState<boolean>(false); // Thêm state để theo dõi trạng thái quét
-  const [showResult, setShowResult] = useState<boolean>(false); // Thêm state để ẩn hiện kết quả
-  const codeReader = useRef<BrowserMultiFormatReader>(
-    new BrowserMultiFormatReader()
-  ); // Dùng useRef để giữ instance của BrowserMultiFormatReader
+  const onScan = (data: any) => {
+    console.log("on scan success", data);
+  };
 
-  const [scannedData, setScannedData] = useState<any>();
-  /**
-   * isModeScan = true => Hien thi camera to scan
-   */
-  const [isModeScan, setIsModeScan] = useState<boolean>(true);
+  const [cameras, setCameras] = useState<QrScanner.Camera[]>([]);
+  const [selectedCamera, setSelectedCamera] = useState<string | undefined>(
+    undefined
+  );
+  const qrScannerRef = useRef<HTMLVideoElement>(null);
+  const [qrScannerInstance, setQrScannerInstance] = useState<QrScanner | null>(
+    null
+  );
 
-  /**
-   * Sẽ trigger khi isModeScan thay đổi
-   */
+  const [statusCamera, setStatusCamera] = useState<boolean>(false);
+
   useEffect(() => {
-    codeReader.current
-      .getVideoInputDevices()
-      .then((videoInputDevices: MediaDeviceInfo[]) => {
-        setDevices(videoInputDevices);
-        if (videoInputDevices.length > 0) {
-          setSelectedDeviceId(videoInputDevices[0].deviceId);
-          // Bắt đầu quét tự động nếu tìm thấy camera
-          // setScanning(true);
-        }
+    QrScanner.listCameras()
+      .then((cameras) => {
+        setCameras(cameras);
+        const rearCamera = cameras.find(
+          (camera: any) => camera.facing === "environment"
+        );
+
+        console.log("list cameras", cameras);
+        setSelectedCamera(
+          rearCamera
+            ? rearCamera.id
+            : cameras.length > 0
+            ? cameras[0].id
+            : undefined
+        );
       })
-      .catch((err: Error) => {
-        console.error(err);
+      .catch((error) => {
+        console.error("Lỗi khi lấy danh sách camera:", error);
+        toast.error("Không thể truy cập camera.");
       });
 
     return () => {
-      codeReader.current.reset();
+      if (qrScannerInstance) {
+        qrScannerInstance.destroy();
+      }
     };
-  }, [isModeScan]);
+  }, []);
 
   useEffect(() => {
-    if (scanning && selectedDeviceId && videoRef.current) {
-      // Thêm tùy chọn hints để cấu hình cho việc quét mã QR
-      const hints = new Map<DecodeHintType, any>();
-      hints.set(DecodeHintType.TRY_HARDER, true);
-      hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-        BarcodeFormat.QR_CODE,
-        BarcodeFormat.CODE_128,
-        BarcodeFormat.EAN_13,
-        BarcodeFormat.EAN_8,
-        BarcodeFormat.UPC_A,
-      ]);
+    if (qrScannerRef.current && selectedCamera) {
+      if (qrScannerInstance) {
+        qrScannerInstance.destroy();
+      }
 
-      codeReader.current.decodeFromVideoDevice(
-        selectedDeviceId,
-        videoRef.current,
-        (result: Result | undefined, err?: Error) => {
-          if (result) {
-            const resultText = result.getText();
-            console.log("Kết quả quét mã:", resultText);
-            setScanResult(resultText);
+      if (statusCamera === false) {
+        return;
+      }
 
-            // tam an chuc nang nay
-            //setShowResult(true); // Hiển thị kết quả
-            setScanning(false); // Dừng quét
-
-            // chuyen qua mode show thong tin
-            setIsModeScan(false);
-
-            let _scannedData = fakeDataScan.find((val) => {
-              if (val.mtrl_code === resultText) {
-                return val;
-              }
-            });
-            setScannedData(_scannedData);
+      const scanner = new QrScanner(
+        qrScannerRef.current,
+        (result: QrScanner.ScanResult) => {
+          if (onScan) {
+            onScan(result.data); // Truy cập data từ result
           }
-          if (err) {
-            console.error("Lỗi khi quét mã:", err);
-          }
+        },
+        {
+          preferredCamera: selectedCamera,
         }
       );
-    } else {
-      codeReader.current.reset();
+
+      scanner
+        .start()
+        .then(() => {
+          setQrScannerInstance(scanner);
+        })
+        .catch((e) => console.error("Error starting scanner", e));
     }
-  }, [isModeScan, scanning, selectedDeviceId]);
+  }, [selectedCamera, cameras, statusCamera]);
 
-  // const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   setSelectedDeviceId(event.target.value);
-  //   setScanning(true); // Bắt đầu quét khi chọn camera mới
-  // };
-
-  const handleDeviceChange = (value: string) => {
-    setSelectedDeviceId(value);
-    setScanning(true); // Bắt đầu quét khi chọn camera mới
-  };
-
-  const handleStartScan = () => {
-    setScanning(true);
-    setShowResult(false); // Ẩn kết quả cũ
-  };
-
-  const handleStopScan = () => {
-    setScanning(false);
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(scanResult);
-    alert("Đã sao chép kết quả vào clipboard!");
+  const handleCameraChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log("pick camera");
+    setSelectedCamera(event.target.value);
   };
 
   return (
@@ -209,219 +184,47 @@ ScanQrDialogProps) => {
             <DialogTitle>Scan In</DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto max-h-[calc(100vh-200px)]">
-            {isModeScan && (
-              <>
-                <div className="grid gap-4">
-                  <div className="container mx-auto p-1">
-                    <div className="flex flex-col items-center">
-                      <div className="w-full  mb-4">
-                        <Label
-                          className="text-sm font-semibold"
-                          htmlFor="type_location"
-                        >
-                          Select Camera
-                        </Label>
-                        <Select
-                          onValueChange={handleDeviceChange}
-                          value={selectedDeviceId}
-                        >
-                          <SelectTrigger id="type_location">
-                            <SelectValue placeholder="No Camera To Select" />
-                          </SelectTrigger>
-                          <SelectContent position="popper">
-                            {devices.map((device: MediaDeviceInfo) => (
-                              <SelectItem
-                                key={device.deviceId}
-                                value={device.deviceId}
-                              >
-                                {device.label || `Camera ${device.deviceId}`}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="w-full  relative">
-                        <video
-                          ref={videoRef}
-                          width="100%"
-                          className="rounded-lg border-2"
-                          // style={{ display: scanning ? "block" : "none" }}
-                        ></video>
-                        {/* Nút điều khiển */}
-                        <div className="mt-4 flex gap-4 w-full bottom-[-50px] left-0">
-                          {!scanning && (
-                            <button
-                              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex gap-1 items-center"
-                              onClick={handleStartScan}
-                            >
-                              <TvMinimalPlay /> Start Scan
-                            </button>
-                          )}
-                          {scanning && (
-                            <button
-                              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex gap-1 items-center"
-                              onClick={handleStopScan}
-                            >
-                              <MonitorStop /> Stop Scan
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Kết quả */}
-                      {showResult && (
-                        <div className="mt-4 w-full ">
-                          <h2 className="text-lg font-semibold mb-2">
-                            Kết quả:
-                          </h2>
-                          <div className="p-2 border border-gray-300 rounded bg-gray-100 break-words select-all">
-                            {scanResult}
-                          </div>
-                          <button
-                            className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={handleCopy}
+            <div className="grid gap-4">
+              <div className="container mx-auto p-1">
+                <div className="flex flex-col items-center">
+                  <div className="w-full mb-4">
+                    <div>
+                      {cameras.length && (
+                        <div>
+                          <label htmlFor="cameraSelect">Chọn camera:</label>
+                          <select
+                            id="cameraSelect"
+                            value={selectedCamera}
+                            onChange={handleCameraChange}
                           >
-                            Copy
-                          </button>
+                            {cameras.map((camera) => (
+                              <option key={camera.id} value={camera.id}>
+                                {camera.label || `Camera ${camera.id}`}
+                              </option>
+                            ))}
+
+                            <option value="1">123</option>
+                          </select>
                         </div>
                       )}
-                      {/* Thông báo lỗi */}
-                      {!scanning && devices.length === 0 && (
-                        <div className="mt-4 text-red-500">
-                          Không tìm thấy camera.
-                        </div>
-                      )}
+                      <video
+                        ref={qrScannerRef}
+                        style={{ width: "100%" }}
+                      ></video>
+                      <div>
+                        <Button
+                          onClick={() => setStatusCamera((prev) => !prev)}
+                        >
+                          {statusCamera ? "Turn Off" : "Turn On"}
+                        </Button>
+                      </div>
+                      <ToastContainer />
                     </div>
                   </div>
                 </div>
-              </>
-            )}
-
-            {/* Khi Scan Success */}
-            {!isModeScan && scannedData && (
-              <>
-                {scannedData && scannedData.isUsing === true ? (
-                  <>
-                    {" "}
-                    <div className="w-full">
-                      <p className="text-2xl font-semibold">Scan Result</p>
-
-                      <div className="w-full min-h-[100px] bg-gray-400 rounded-xl shadow-xl relative p-2">
-                        <div className="w-full rounded overflow-hidden shadow-lg">
-                          <img
-                            className="w-full h-40 bg-white"
-                            src="https://placehold.co/600x400"
-                            alt="Placeholder Image"
-                          />
-                          <div className="p-2">
-                            <div className="text-xl mb-1">
-                              Code:{" "}
-                              <span className="font-bold">
-                                {scannedData.mtrl_code}
-                              </span>
-                            </div>
-                            <p className="text-gray-700 text-base line-clamp-2">
-                              Lorem ipsum dolor sit amet, consectetur adipiscing
-                              elit. Phasellus ac pretium diam.
-                            </p>
-                          </div>
-                          <div className="p-2 pb-2">
-                            <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                              Not Available | {scannedData.location}
-                            </span>
-
-                            {/* <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                          Available
-                        </span> */}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-2 flex justify-center space-x-1">
-                        {parentPage !== "scanIn" && (
-                          <Button
-                            onClick={() => {
-                              console.log("scannedData", scannedData);
-                              submitTakeNewMtrl2Location(scannedData);
-                              handleOnChangeOpen(false);
-                            }}
-                          >
-                            Submit
-                          </Button>
-                        )}
-
-                        <Button
-                          onClick={() => {
-                            setScannedData(null);
-                            setIsModeScan(true);
-                          }}
-                        >
-                          Scan Again
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {" "}
-                    <div className="w-full">
-                      <p className="text-2xl font-semibold">Scan Result</p>
-
-                      <div className="w-full min-h-[100px] bg-green-400 rounded-xl shadow-xl relative p-2">
-                        <div className="w-full rounded overflow-hidden shadow-lg">
-                          <img
-                            className="w-full h-40 bg-white"
-                            src="https://placehold.co/600x400"
-                            alt="Placeholder Image"
-                          />
-                          <div className="p-2">
-                            <div className="text-xl mb-1">
-                              Code:{" "}
-                              <span className="font-bold">
-                                {scannedData.mtrl_code}
-                              </span>
-                            </div>
-                            <p className="text-gray-700 text-base line-clamp-2">
-                              Lorem ipsum dolor sit amet, consectetur adipiscing
-                              elit. Phasellus ac pretium diam.
-                            </p>
-                          </div>
-                          <div className="p-2 pb-2">
-                            <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                              Available
-                            </span>
-
-                            {/* <span className="inline-block bg-white rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                          Available
-                        </span> */}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-2 flex justify-center space-x-1">
-                        <Button
-                          onClick={() => {
-                            console.log("scannedData", scannedData);
-                            submitTakeNewMtrl2Location(scannedData);
-                            handleOnChangeOpen(false);
-                          }}
-                        >
-                          Submit
-                        </Button>
-                        <Button onClick={() => setIsModeScan(true)}>
-                          Scan Again
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-            {/* Khi Scan Success */}
+              </div>
+            </div>
           </div>
-          {/* <DialogFooter>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter> */}
         </DialogContent>
       </Dialog>
     </>

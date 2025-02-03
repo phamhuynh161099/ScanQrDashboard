@@ -26,9 +26,17 @@ export const getAccessTokenFromLS = () =>
 export const getRefreshTokenFromLS = () =>
   localStorage.getItem("refresh_token") || "";
 
+/**
+ * Nếu không thể JSON parse sẽ mặc định trả về ""
+ * <=> Chưa đăng nhâp
+ */
 export const getProfileFromLS = () => {
   const result = localStorage.getItem("profile") || "";
-  return result ? JSON.parse(result) : null;
+  try {
+    return result ? JSON.parse(result) : null;
+  } catch (error) {
+    return "";
+  }
 };
 
 export const setProfileToLS = (profile: User) => {

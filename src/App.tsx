@@ -18,7 +18,6 @@ import BorrowReturnHistoryManagement from "./pages/template/borrow-return-histor
 import BorrowReturnManagementPage from "./pages/template/borrow-return-management.tsx";
 import LocationManagementPage from "./pages/template/location-management.tsx";
 import MtrlManagementV2Page from "./pages/template/mtrl-mamagement-v2.tsx";
-import MtrlManagementPage from "./pages/template/mtrl-management.tsx";
 import PrintQrPage from "./pages/template/print-qr.tsx";
 import { LocalStorageEventTarget } from "./utils/auth.ts";
 import { useEffect } from "react";
@@ -27,6 +26,8 @@ import {
   setProfile,
   setRefreshToken,
 } from "./features/auth/authSlice.tsx";
+import MtrlManagementPage from "./pages/mtrl-management/mtrl-management.tsx";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -69,13 +70,30 @@ function App() {
           path: "",
           element: <Layout />,
           children: [
-            { path: "generate-qr", element: <GenerateQrPage /> },
-            { path: "scan-qr", element: <ScanQr /> },
-            { path: "scan-qr-v2", element: <ScanQrV2 /> },
-            { path: "scan-in", element: <ScanInPage /> }, //-
-            { path: "mtrl-management", element: <MtrlManagementPage /> },
-            { path: "mtrl-management-v2", element: <MtrlManagementV2Page /> }, //-
-            { path: "print-qr", element: <PrintQrPage /> }, //-
+            {
+              path: "generate-qr",
+              element: <GenerateQrPage />,
+            },
+            {
+              path: "scan-qr",
+              element: <ScanQr />,
+            },
+            {
+              path: "scan-qr-v2",
+              element: <ScanQrV2 />,
+            },
+            {
+              path: "scan-in",
+              element: <ScanInPage />,
+            }, //-
+            {
+              path: "mtrl-management",
+              element: <MtrlManagementPage />,
+            }, //-
+            {
+              path: "print-qr",
+              element: <PrintQrPage />,
+            }, //-
             {
               path: "location-management",
               element: <LocationManagementPage />,
@@ -88,7 +106,10 @@ function App() {
               path: "borrow-return-history-management",
               element: <BorrowReturnHistoryManagement />,
             },
-            { path: "scan-infor", element: <ScanInforPage /> }, //-
+            {
+              path: "scan-infor",
+              element: <ScanInforPage />,
+            }, //-
           ],
         },
       ],
@@ -111,6 +132,7 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
+      <ToastContainer />
     </>
   );
 }

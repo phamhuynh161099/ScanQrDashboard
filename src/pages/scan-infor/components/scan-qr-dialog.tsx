@@ -218,7 +218,6 @@ ScanQrDialogProps) => {
                           {statusCamera ? "Turn Off" : "Turn On"}
                         </Button>
                       </div>
-                      <ToastContainer />
                     </div>
                   </div>
                 </div>

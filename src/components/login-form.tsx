@@ -13,6 +13,8 @@ import {
   setProfile,
   setRefreshToken,
 } from "@/features/auth/authSlice";
+import { toast } from "react-toastify";
+import { setStartLoading } from "@/features/loading/loadingSlice";
 
 export function LoginForm() {
   const navigate = useNavigate();
@@ -20,19 +22,24 @@ export function LoginForm() {
 
   const handleLogin = async () => {
     try {
+      dispatch(setStartLoading(true));
       const response: any = await authApi.login({
         username: "emilys",
         password: "emilyspass",
       });
 
-      console.log("response", response);
       dispatch(setAccessToken(response.accessToken));
       dispatch(setRefreshToken(response.refreshToken));
       dispatch(setProfile(response));
 
+      toast.success("Login Success!");
+      
+      // Redirect page when login success
       navigate("/admin/scan-in");
     } catch (error) {
+      toast.error("Login Error!");
     } finally {
+      dispatch(setStartLoading(false));
     }
   };
 

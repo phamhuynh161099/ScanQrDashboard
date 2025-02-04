@@ -1,6 +1,6 @@
 import HttpStatusCode from "@/constants/httpStatusCode.enum";
 import axios, { AxiosError, type AxiosInstance } from "axios";
-// import { toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { URL_LOGIN, URL_LOGOUT, URL_REGISTER } from "@/apis/auth.api";
 import config from "@/constants/config";
 import { ErrorResponse } from "src/types/utils.type";
@@ -31,7 +31,7 @@ export class Http {
     this.instance.interceptors.request.use(
       (config) => {
         if (this.accessToken && config.headers) {
-          config.headers.authorization = this.accessToken;
+          config.headers.authorization = 'Bearer ' + this.accessToken;
           return config;
         }
         return config;

@@ -1,23 +1,19 @@
+import { useAppSelector } from "@/app/hooks";
 import { AppSidebar } from "@/components/app-sidebar";
-// import {
-//   Breadcrumb,
-//   BreadcrumbItem,
-//   BreadcrumbLink,
-//   BreadcrumbList,
-//   BreadcrumbPage,
-//   BreadcrumbSeparator,
-// } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Outlet } from "react-router-dom";
-import { ModeToggle } from "./mode-toggle";
 import { ArrowUp } from "lucide-react";
+import { Outlet } from "react-router-dom";
+import CusLoading from "./cus-loading";
+import { ModeToggle } from "./mode-toggle";
 
 const Layout = () => {
+  const { isLoading: cusLoading } = useAppSelector((state) => state.loading);
+
   const handleClickScrollUp = () => {
     window.scrollTo({
       top: 0,
@@ -55,6 +51,8 @@ const Layout = () => {
           </div>
         </SidebarInset>
       </SidebarProvider>
+
+      {cusLoading && <CusLoading />}
     </>
   );
 };

@@ -28,6 +28,7 @@ import {
 } from "./features/auth/authSlice.tsx";
 import MtrlManagementPage from "./pages/mtrl-management/mtrl-management.tsx";
 import { ToastContainer } from "react-toastify";
+import MtrlImportPage from "./pages/mtrl-management/mtrl-import/mtrl-import.tsx";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -85,19 +86,23 @@ function App() {
             {
               path: "scan-in",
               element: <ScanInPage />,
-            }, //-
+            },
             {
               path: "mtrl-management",
               element: <MtrlManagementPage />,
-            }, //-
+            },
+            {
+              path: "mtrl-management/import",
+              element: <MtrlImportPage />,
+            },
             {
               path: "print-qr",
               element: <PrintQrPage />,
-            }, //-
+            },
             {
               path: "location-management",
               element: <LocationManagementPage />,
-            }, //-
+            },
             {
               path: "borrow-return-management",
               element: <BorrowReturnManagementPage />,
@@ -109,7 +114,7 @@ function App() {
             {
               path: "scan-infor",
               element: <ScanInforPage />,
-            }, //-
+            },
           ],
         },
       ],

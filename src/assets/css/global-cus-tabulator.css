@@ -1,0 +1,11 @@
+.tabulator .tabulator-footer .tabulator-paginator {
+    text-align: left;
+}
+
+.tabulator .tabulator-footer .tabulator-page {
+    /* background: #ebebeb; */
+}
+
+.tabulator .tabulator-footer .tabulator-page.active {
+    color: black;
+}

@@ -10,15 +10,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ColumnDefinition,
   reactFormatter,
   ReactTabulator,
 } from "react-tabulator";
+import * as XLSX from "xlsx";
 import "tabulator-tables/dist/css/tabulator_midnight.min.css";
-import MtrlAddDialog from "./mtrl-add-dialog/mtrl-add-dialog";
-import MtrlEditDialog from "./mtrl-edit-dialog/mtrl-edit-dialog";
 import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 import "@/assets/css/global-cus-tabulator.css";
@@ -26,33 +25,18 @@ import authApi from "@/apis/auth.api";
 import { useAppDispatch } from "@/app/hooks";
 import { setStartLoading } from "@/features/loading/loadingSlice";
 
-const MtrlManagementPage = () => {
+const MtrlImportPage = () => {
   const [tableData, setTableData] = useState([{}]);
+  const inputRef = useRef<any>(null); // Ref để truy cập input file
+
+  const handleImport = () => {
+    if (inputRef.current) {
+      inputRef.current.click(); // Mở hộp thoại chọn file khi button được click
+    }
+  };
 
   //* Get dispatch
   const dispatch = useAppDispatch();
-
-  //* Add New Row MTRL
-  const [openMtrlAddDialog, setOpenMtrlAddDialog] = useState<boolean>(true);
-  const handleOpenMtrlAddDialog = (value: any) => {
-    setOpenMtrlAddDialog(value);
-  };
-  const handleSaveChangeAdd = (dataSaveChanges: any) => {
-    console.log("data save changes", dataSaveChanges);
-  };
-  //* Add New Row MTRL
-
-  //* Edit Row
-  const [openMtrlEditDialog, setOpenMtrlEditDialog] = useState(false);
-  const [dataEditMtrl, setDataEditMtrl] = useState<any>(null);
-  const handleOpenMtrlEditDialog = (value: any) => {
-    setOpenMtrlEditDialog(value);
-    setDataEditMtrl(null);
-  };
-  const handleSaveChangeEdit = (dataSaveChanges: any) => {
-    console.log("data save changes", dataSaveChanges);
-  };
-  //* Edit Row
 
   //* React Tablutor
   const GenerateTablutorButton = (props: any) => {
@@ -84,10 +68,7 @@ const MtrlManagementPage = () => {
       // setDataEditLocation(rowData);
     };
 
-    const handleClickEdit = () => {
-      setOpenMtrlEditDialog(true);
-      setDataEditMtrl(rowData);
-    };
+    const handleClickEdit = () => {};
 
     return (
       <>
@@ -125,6 +106,9 @@ const MtrlManagementPage = () => {
       width: 200,
       responsive: 0,
       headerFilter: "input",
+
+      editor:"input",
+      editable:true
     },
     {
       title: "MTRL Code",
@@ -229,6 +213,7 @@ const MtrlManagementPage = () => {
       field: "supplier_material_name",
       hozAlign: "center",
       width: 150,
+      editor:"input"
     },
     {
       title: "Material Code",
@@ -257,12 +242,6 @@ const MtrlManagementPage = () => {
     {
       title: "Composition",
       field: "composition",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Toolbox",
-      field: "toolbox",
       hozAlign: "center",
       width: 150,
     },
@@ -350,8 +329,8 @@ const MtrlManagementPage = () => {
       try {
         dispatch(setStartLoading(true));
         const response = await callListMtrl();
-        console.log('response',response);
-        setTableData(data)
+        console.log("response", response);
+        setTableData(data);
       } catch (error) {
         console.log("error:", error);
       } finally {
@@ -360,7 +339,72 @@ const MtrlManagementPage = () => {
     };
 
     fetchData();
-  },[]);
+  }, []);
+
+  const [dataImportExcel, setData] = useState([]);
+
+  const handleFileChange = (event: any) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+      /* read workbook */
+      const bstr: string = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(bstr, {
+        type: "binary",
+        cellText: false,
+        cellDates: true,
+      });
+      /* grab first sheet */
+      const wsname: string = wb.SheetNames[0];
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+      /* save data */
+      const excelDataImport = XLSX.utils.sheet_to_json(ws, {
+        header: 1,
+        raw: true,
+        dateNF: "yyyymmdd",
+      });
+      console.log("excelDataImport", excelDataImport);
+
+      let handledData = [];
+      handledData = excelDataImport.map((row: any) => {
+        return {
+          type: row[0],
+          supplier_name: row[1],
+          supplier_material_name: row[2],
+          material_code: row[3],
+          material_code_supplier_name: row[4],
+          material_classification_level_1: row[5],
+          material_classification_level_2: row[6],
+          material_classification_level_3: row[7],
+          material_classification_level_4: row[8],
+          material_classification: row[9],
+          epm_rating: row[11],
+          composition: row[12],
+          toolbox: row[13],
+          width: row[14],
+          weight: row[15],
+          price: row[16],
+          pic: row[17],
+          request_date: row[18],
+          etc: row[19],
+          etd: row[20],
+          shipping_way: row[21],
+          eta: row[22],
+          shell: row[23],
+          shefl: row[26],
+        };
+      });
+
+      console.log('data:',handledData);
+      setTableData(handledData)
+    }; 
+
+    reader.readAsBinaryString(file);
+    // clear data in this input tag
+    inputRef.current.value = '';
+  };
 
   const data: any = [
     {
@@ -483,11 +527,6 @@ const MtrlManagementPage = () => {
     },
   ];
 
-  // const handleRowClick = (e: any, row: any) => {
-  //   console.log("Row clicked:", row.getData());
-  //   alert(`You clicked row with ID: ${row.getData().id}`);
-  // };
-
   /**
    * LAYOUT_HEADER: 48px
    */
@@ -522,21 +561,23 @@ const MtrlManagementPage = () => {
 
           {/* Button helper */}
           <div className="flex justify-end space-x-2">
-            <Button
-              className="flex gap-1"
-              onClick={() => setOpenMtrlAddDialog(true)}
-            >
+            <Button className="flex gap-1">
               <ClipboardPlus />
               Add New MTRL
             </Button>
 
-            <Button
-              className="flex gap-1"
-              onClick={() => setOpenMtrlAddDialog(true)}
-            >
+            <Button className="flex gap-1" onClick={handleImport}>
               <FileUp />
               Import MTRL file
             </Button>
+
+            <input
+              type="file"
+              accept=".xlsx, .xls"
+              onChange={handleFileChange}
+              ref={inputRef} // Gán ref cho input file
+              style={{ display: "none" }} // Ẩn input file
+            />
           </div>
         </div>
 
@@ -553,9 +594,9 @@ const MtrlManagementPage = () => {
             layout="fitColumns" // Tùy chọn layout
             options={{
               pagination: "local",
-              paginationSize: 50,
+              // paginationSize: 10,
               // movableColumns: true,
-              movableRows: true,
+              movableRows: false,
               dataTree: true,
               height: "100%",
               // dataTreeStartExpanded: true,
@@ -563,27 +604,8 @@ const MtrlManagementPage = () => {
           />
         </div>
       </div>
-
-      {/* popup edit row */}
-      {dataEditMtrl && (
-        <MtrlEditDialog
-          data={dataEditMtrl}
-          open={openMtrlEditDialog}
-          handleSaveChangeEdit={handleSaveChangeEdit}
-          handleOpenMtrlEditDialog={handleOpenMtrlEditDialog}
-        />
-      )}
-
-      {/* popup add row */}
-      {openMtrlAddDialog && (
-        <MtrlAddDialog
-          open={openMtrlAddDialog}
-          handleSaveChangeAdd={handleSaveChangeAdd}
-          handleOpenMtrlAddDialog={handleOpenMtrlAddDialog}
-        />
-      )}
     </>
   );
 };
 
-export default MtrlManagementPage;
+export default MtrlImportPage;

@@ -42,12 +42,15 @@ const Layout = () => {
           <div className="">
             <Outlet />
 
+            {/* Arrow scroll to top */}
             <div
               className="fixed bottom-2 right-2 w-12 h-12 bg-sky-400 rounded-full flex justify-center items-center"
               onClick={handleClickScrollUp}
             >
               <ArrowUp />
             </div>
+            {/* Arrow scroll to top */}
+            
           </div>
         </SidebarInset>
       </SidebarProvider>

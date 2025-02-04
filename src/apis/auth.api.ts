@@ -36,7 +36,7 @@ const authApi = {
    * Get my infor
    */
   me() {
-    return http.get<AuthResponse>(URL_ME);
+    return http.get<any>(URL_ME);
   },
 };
 

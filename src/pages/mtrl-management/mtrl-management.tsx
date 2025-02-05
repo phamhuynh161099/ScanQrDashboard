@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ColumnDefinition,
   reactFormatter,
@@ -26,11 +26,28 @@ import authApi from "@/apis/auth.api";
 import { useAppDispatch } from "@/app/hooks";
 import { setStartLoading } from "@/features/loading/loadingSlice";
 import { useNavigate } from "react-router-dom";
+import LOCAL_STORAGE_NAME from "@/constants/localStorageName";
+import useLocalStorage from "@/hooks/use-local-storage";
 
 const MtrlManagementPage = () => {
-  const [tableData, setTableData] = useState([{}]);
-
   const navigate = useNavigate();
+  const [filterSeason,setFilterSeason] = useState<string|undefined>('All')
+  const [tempImportedDataExcel, setTempImportedDataExcel] = useLocalStorage(
+    LOCAL_STORAGE_NAME.MTRL_TEMP_IMPORTED_DATA_EXCEL,
+    null
+  );
+
+  //* Set/get data for React-Tabul
+  const [tableData, setTableData] = useState<any[]>(() => {
+    try {
+      return tempImportedDataExcel;
+    } catch (error) {
+      console.error("Lỗi khi đọc từ localStorage:", error);
+      return null;
+    }
+  });
+
+  let tableRef = useRef<any>(null);
 
   //* Get dispatch
   const dispatch = useAppDispatch();
@@ -68,7 +85,8 @@ const MtrlManagementPage = () => {
       console.log("rowData", rowData, tableData);
 
       let _tableData = tableData.map((value: any, idx) => {
-        if (value.mtrl_code == rowData.mtrl_code) {
+        if (value.material_code == rowData.material_code) {
+          if (value["_children"] === undefined) value["_children"] = []
           value["_children"].push({
             mtrl_code: `${rowData.mtrl_code}-00${
               value["_children"].length + 1
@@ -94,7 +112,22 @@ const MtrlManagementPage = () => {
 
     return (
       <>
-        {rowLevel === "parent" && (
+      <>
+            <button
+              className="px-2 bg-sky-500 rounded-sm"
+              onClick={() => handleClickAddItem()}
+            >
+              Add Item
+            </button>
+            <button
+              className="ml-1 px-2 bg-yellow-500 rounded-sm"
+              onClick={() => handleClickEdit()}
+            >
+              Edit
+            </button>
+            <button className="ml-1 px-2 bg-red-500 rounded-sm">Delete</button>
+          </>
+        {/* {rowLevel === "parent" && (
           <>
             <button
               className="px-2 bg-sky-500 rounded-sm"
@@ -116,104 +149,104 @@ const MtrlManagementPage = () => {
           <>
             <button className="ml-1 px-2 bg-red-500 rounded-sm">Delete</button>
           </>
-        )}
+        )} */}
       </>
     );
   };
 
   const columns: ColumnDefinition[] = [
-    {
-      title: "MTRL Name",
-      field: "mtrl_name",
-      width: 200,
-      responsive: 0,
-      headerFilter: "input",
-    },
-    {
-      title: "MTRL Code",
-      field: "mtrl_code",
-      width: 150,
-    },
-    {
-      title: "Season",
-      field: "season",
-      width: 150,
-    },
-    {
-      title: "Type",
-      field: "type",
-      width: 150,
-    },
-    {
-      title: "Classification",
-      field: "classification",
-      hozAlign: "center",
+    // {
+    //   title: "MTRL Name",
+    //   field: "mtrl_name",
+    //   width: 200,
+    //   responsive: 0,
+    //   headerFilter: "input",
+    // },
+    // {
+    //   title: "MTRL Code",
+    //   field: "mtrl_code",
+    //   width: 150,
+    // },
+    // {
+    //   title: "Season",
+    //   field: "season",
+    //   width: 150,
+    // },
+    // {
+    //   title: "Type",
+    //   field: "type",
+    //   width: 150,
+    // },
+    // {
+    //   title: "Classification",
+    //   field: "classification",
+    //   hozAlign: "center",
 
-      width: 150,
-    },
-    {
-      title: "EPM Rating",
-      field: "epm_rating",
-      hozAlign: "center",
+    //   width: 150,
+    // },
+    // {
+    //   title: "EPM Rating",
+    //   field: "epm_rating",
+    //   hozAlign: "center",
 
-      width: 150,
-    },
-    {
-      title: "Composition",
-      field: "composition",
-      hozAlign: "center",
+    //   width: 150,
+    // },
+    // {
+    //   title: "Composition",
+    //   field: "composition",
+    //   hozAlign: "center",
 
-      width: 150,
-    },
-    {
-      title: "Width",
-      field: "width",
-      hozAlign: "center",
+    //   width: 150,
+    // },
+    // {
+    //   title: "Width",
+    //   field: "width",
+    //   hozAlign: "center",
 
-      width: 150,
-    },
-    {
-      title: "Weight",
-      field: "weight",
-      hozAlign: "center",
+    //   width: 150,
+    // },
+    // {
+    //   title: "Weight",
+    //   field: "weight",
+    //   hozAlign: "center",
 
-      width: 150,
-    },
-    {
-      title: "Price",
-      field: "price",
-      hozAlign: "center",
+    //   width: 150,
+    // },
+    // {
+    //   title: "Price",
+    //   field: "price",
+    //   hozAlign: "center",
 
-      width: 150,
-    },
-    {
-      title: "MTRL Type",
-      field: "mtrl_type",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Created Date",
-      field: "created_dt",
-      hozAlign: "center",
+    //   width: 150,
+    // },
+    // {
+    //   title: "MTRL Type",
+    //   field: "mtrl_type",
+    //   hozAlign: "center",
+    //   width: 150,
+    // },
+    // {
+    //   title: "Created Date",
+    //   field: "created_dt",
+    //   hozAlign: "center",
 
-      width: 150,
-    },
-    {
-      title: "Created By",
-      field: "created_by",
-      hozAlign: "center",
+    //   width: 150,
+    // },
+    // {
+    //   title: "Created By",
+    //   field: "created_by",
+    //   hozAlign: "center",
 
-      width: 150,
-    },
-    { title: "Location", field: "location", width: 150 },
-    {
-      title: "Action",
-      // field: "custom",
-      width: 200,
-      hozAlign: "center",
-      formatter: reactFormatter(<GenerateTablutorButton />),
-    },
+    //   width: 150,
+    // },
+    // { title: "Location", field: "location", width: 150 },
+    // {
+    //   title: "Action",
+    //   // field: "custom",
+    //   width: 200,
+    //   hozAlign: "center",
+    //   formatter: reactFormatter(<GenerateTablutorButton />),
+    // },
 
     {
       title: "Type",
@@ -341,6 +374,13 @@ const MtrlManagementPage = () => {
       hozAlign: "center",
       width: 150,
     },
+    {
+      title: "Action",
+      // field: "custom",
+      width: 200,
+      hozAlign: "center",
+      formatter: reactFormatter(<GenerateTablutorButton />),
+    },
   ];
   //* React Tablutor
 
@@ -367,7 +407,8 @@ const MtrlManagementPage = () => {
       }
     };
 
-    fetchData();
+    //! Call api
+    // fetchData();
   }, []);
 
   const data: any = [
@@ -491,6 +532,10 @@ const MtrlManagementPage = () => {
     },
   ];
 
+  const handleSeasonChange = (value:string) => {
+
+  }
+
   // const handleRowClick = (e: any, row: any) => {
   //   console.log("Row clicked:", row.getData());
   //   alert(`You clicked row with ID: ${row.getData().id}`);
@@ -503,25 +548,23 @@ const MtrlManagementPage = () => {
     <>
       <div
         className={cn(
-          `min-h-[calc(100vh-48px)] w-full p-2 flex-1 space-y-2 grid grid-rows-[auto_1fr]`
+          `h-[calc(100vh-48px)] w-full p-2 flex-1 space-y-2 grid grid-rows-[auto_1fr]`
         )}
       >
         <div className="w-full p-2 border rounded-xl shadow-lg h-auto space-y-2">
           {/* Filter helper */}
           <div className="grid grid-cols-2 md:grid-cols-4">
             <div>
-              <Select>
+              <Select onValueChange={handleSeasonChange} value={filterSeason}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select a season" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Season</SelectLabel>
-                    <SelectItem value="apple">SS23</SelectItem>
-                    <SelectItem value="banana">Banana</SelectItem>
-                    <SelectItem value="blueberry">Blueberry</SelectItem>
-                    <SelectItem value="grapes">Grapes</SelectItem>
-                    <SelectItem value="pineapple">Pineapple</SelectItem>
+                    <SelectItem value="All">All</SelectItem>
+                    <SelectItem value="FW25">FW25</SelectItem>
+                    <SelectItem value="SS26">SS26</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -550,7 +593,7 @@ const MtrlManagementPage = () => {
 
         <div className="w-full border bg-red-50 rounded-xl shadow-lg relative overflow-x-auto">
           <ReactTabulator
-            onRef={(ref) => (ref = ref)}
+            onRef={(ref) => (tableRef.current = ref)}
             data={tableData}
             columns={columns}
             events={
@@ -561,7 +604,7 @@ const MtrlManagementPage = () => {
             layout="fitColumns" // Tùy chọn layout
             options={{
               pagination: "local",
-              paginationSize: 50,
+              // paginationSize: 50,
               // movableColumns: true,
               movableRows: true,
               dataTree: true,

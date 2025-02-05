@@ -25,9 +25,12 @@ import "@/assets/css/global-cus-tabulator.css";
 import authApi from "@/apis/auth.api";
 import { useAppDispatch } from "@/app/hooks";
 import { setStartLoading } from "@/features/loading/loadingSlice";
+import { useNavigate } from "react-router-dom";
 
 const MtrlManagementPage = () => {
   const [tableData, setTableData] = useState([{}]);
+
+  const navigate = useNavigate();
 
   //* Get dispatch
   const dispatch = useAppDispatch();
@@ -339,6 +342,11 @@ const MtrlManagementPage = () => {
       width: 150,
     },
   ];
+  //* React Tablutor
+
+  const handleClickRedirectImportMode = () => {
+    navigate("/admin/mtrl-management/import");
+  };
 
   const callListMtrl = async () => {
     const result = await authApi.me();
@@ -350,8 +358,8 @@ const MtrlManagementPage = () => {
       try {
         dispatch(setStartLoading(true));
         const response = await callListMtrl();
-        console.log('response',response);
-        setTableData(data)
+        console.log("response", response);
+        setTableData(data);
       } catch (error) {
         console.log("error:", error);
       } finally {
@@ -360,7 +368,7 @@ const MtrlManagementPage = () => {
     };
 
     fetchData();
-  },[]);
+  }, []);
 
   const data: any = [
     {
@@ -532,10 +540,10 @@ const MtrlManagementPage = () => {
 
             <Button
               className="flex gap-1"
-              onClick={() => setOpenMtrlAddDialog(true)}
+              onClick={handleClickRedirectImportMode}
             >
               <FileUp />
-              Import MTRL file
+              Import Mode
             </Button>
           </div>
         </div>

@@ -1,5 +1,6 @@
+import { useAppDispatch } from "@/app/hooks";
+import "@/assets/css/global-cus-tabulator.css";
 import { Button } from "@/components/ui/button";
-import { ClipboardPlus, FileUp } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -9,36 +10,53 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import LOCAL_STORAGE_NAME from "@/constants/localStorageName";
+import {
+  setEndLoading,
+  setStartLoading,
+} from "@/features/loading/loadingSlice";
+import useLocalStorage from "@/hooks/use-local-storage";
+import { cn } from "@/lib/utils";
+import { CloudUpload, Eraser, FileUp, SaveAll, Undo2 } from "lucide-react";
 import moment from "moment";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   ColumnDefinition,
   reactFormatter,
   ReactTabulator,
 } from "react-tabulator";
-import * as XLSX from "xlsx";
-import "tabulator-tables/dist/css/tabulator_midnight.min.css";
 import { toast } from "react-toastify";
-import { cn } from "@/lib/utils";
-import "@/assets/css/global-cus-tabulator.css";
-import authApi from "@/apis/auth.api";
-import { useAppDispatch } from "@/app/hooks";
-import { setStartLoading } from "@/features/loading/loadingSlice";
+import "tabulator-tables/dist/css/tabulator_midnight.min.css";
+import * as XLSX from "xlsx";
+import { nanoid } from "nanoid";
+import { useNavigate } from "react-router-dom";
 
 const MtrlImportPage = () => {
-  const [tableData, setTableData] = useState([{}]);
-  const inputRef = useRef<any>(null); // Ref để truy cập input file
+  const navigate = useNavigate();
+  const [tempImportedDataExcel, setTempImportedDataExcel] = useLocalStorage(
+    LOCAL_STORAGE_NAME.MTRL_TEMP_IMPORTED_DATA_EXCEL,
+    null
+  );
 
-  const handleImport = () => {
-    if (inputRef.current) {
-      inputRef.current.click(); // Mở hộp thoại chọn file khi button được click
+  let tableRef = useRef<any>(null);
+  const [editedRows, setEditedRows] = useState<any>();
+
+  //* Set/get data for React-Tabul
+  const [tableData, setTableData] = useState<any[]>(() => {
+    try {
+      return tempImportedDataExcel;
+    } catch (error) {
+      console.error("Lỗi khi đọc từ localStorage:", error);
+      return null;
     }
-  };
+  });
+  //* Ref để truy cập tag input file
+  const inputRef = useRef<any>(null);
 
   //* Get dispatch
   const dispatch = useAppDispatch();
 
-  //* React Tablutor
+  //*!========== React Tablutor
   const GenerateTablutorButton = (props: any) => {
     const rowData = props.cell._cell.row.data;
 
@@ -99,95 +117,207 @@ const MtrlImportPage = () => {
     );
   };
 
-  const columns: ColumnDefinition[] = [
-    {
-      title: "MTRL Name",
-      field: "mtrl_name",
-      width: 200,
-      responsive: 0,
-      headerFilter: "input",
-
-      editor:"input",
-      editable:true
-    },
-    {
-      title: "MTRL Code",
-      field: "mtrl_code",
-      width: 150,
-    },
-    {
-      title: "Season",
-      field: "season",
-      width: 150,
-    },
+  let columns: ColumnDefinition[] = [
     {
       title: "Type",
       field: "type",
+      hozAlign: "center",
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
     {
-      title: "Classification",
-      field: "classification",
+      title: "Supplier Name",
+      field: "supplier_name",
       hozAlign: "center",
-
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
+    {
+      title: "Supplier Material Name",
+      field: "supplier_material_name",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
+    {
+      title: "Material Code",
+      field: "material_code",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
+    {
+      title: "Material Code - Supplier Name",
+      field: "material_code_supplier_name",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
+    {
+      title: "Material Classification Level1",
+      field: "material_classification_level_1",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
     {
       title: "EPM Rating",
       field: "epm_rating",
       hozAlign: "center",
-
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
     {
       title: "Composition",
       field: "composition",
       hozAlign: "center",
-
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
+    {
+      title: "Toolbox",
+      field: "toolbox",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
     {
       title: "Width",
       field: "width",
       hozAlign: "center",
-
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
     {
       title: "Weight",
       field: "weight",
       hozAlign: "center",
-
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
     {
       title: "Price",
       field: "price",
       hozAlign: "center",
-
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
     {
-      title: "MTRL Type",
-      field: "mtrl_type",
+      title: "PIC",
+      field: "pic",
       hozAlign: "center",
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
     {
-      title: "Created Date",
-      field: "created_dt",
+      title: "Request date",
+      field: "request_date",
       hozAlign: "center",
-
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
     {
-      title: "Created By",
-      field: "created_by",
+      title: "ETC",
+      field: "etc",
       hozAlign: "center",
-
       width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
     },
-    { title: "Location", field: "location", width: 150 },
+    {
+      title: "ETD",
+      field: "etd",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
+    {
+      title: "Shipping way",
+      field: "shipping_way",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
+    {
+      title: "ETA",
+      field: "eta",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
+    {
+      title: "Shell",
+      field: "shell",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
+    {
+      title: "Shefl",
+      field: "shefl",
+      hozAlign: "center",
+      width: 150,
+
+      headerFilter: "input",
+      editor: "input",
+      editable: true,
+    },
     {
       title: "Action",
       // field: "custom",
@@ -195,159 +325,53 @@ const MtrlImportPage = () => {
       hozAlign: "center",
       formatter: reactFormatter(<GenerateTablutorButton />),
     },
-
-    {
-      title: "Type",
-      field: "type",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Supplier Name",
-      field: "supplier_name",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Supplier Material Name",
-      field: "supplier_material_name",
-      hozAlign: "center",
-      width: 150,
-      editor:"input"
-    },
-    {
-      title: "Material Code",
-      field: "material_code",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Material Code - Supplier Name",
-      field: "material_code_supplier_name",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Material Classification Level1",
-      field: "material_classification_level_1",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "EPM Rating",
-      field: "epm_rating",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Composition",
-      field: "composition",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Toolbox",
-      field: "toolbox",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Width",
-      field: "width",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Weight",
-      field: "weight",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Price",
-      field: "price",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "PIC",
-      field: "pic",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Request date",
-      field: "request_date",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "ETC",
-      field: "etc",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "ETD",
-      field: "etd",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Shipping way",
-      field: "shipping_way",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "ETA",
-      field: "eta",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Shell",
-      field: "shell",
-      hozAlign: "center",
-      width: 150,
-    },
-    {
-      title: "Shefl",
-      field: "shefl",
-      hozAlign: "center",
-      width: 150,
-    },
   ];
 
-  const callListMtrl = async () => {
-    const result = await authApi.me();
-    return result;
+  //* Handel cell when it been edited
+  const handleCellEdit = (cell: any) => {
+    const rowData = cell.getRow().getData();
+    const rowId = rowData.custom_id;
+    setEditedRows((prevEditedRows: any) => ({
+      ...prevEditedRows,
+      [rowId]: rowData,
+    }));
+
+    //* Lấy phần tử cha trực tiếp
+    const parentElement = cell.getElement().parentElement;
+
+    if (parentElement) {
+      parentElement.style.backgroundColor = "#ef4444";
+      parentElement.style.color = "white";
+    }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        dispatch(setStartLoading(true));
-        const response = await callListMtrl();
-        console.log("response", response);
-        setTableData(data);
-      } catch (error) {
-        console.log("error:", error);
-      } finally {
-        dispatch(setStartLoading(false));
-      }
-    };
+  //* Add new function to support for this row
+  columns = columns.map((col) => {
+    if (col.editable) {
+      return {
+        ...col,
+        cellEdited: handleCellEdit,
+      };
+    }
+    return col;
+  });
+  //*!=========== React Tablutor
 
-    fetchData();
-  }, []);
-
-  const [dataImportExcel, setData] = useState([]);
+  //* Function Import Excel File
+  const handleImport = () => {
+    if (inputRef.current) {
+      //* Mở hộp thoại chọn file khi button được click
+      inputRef.current.click();
+    }
+  };
 
   const handleFileChange = (event: any) => {
     const file = event.target.files[0];
     const reader = new FileReader();
 
     reader.onload = (e: any) => {
+      dispatch(setStartLoading(true));
+
       /* read workbook */
       const bstr: string = e.target.result;
       const wb: XLSX.WorkBook = XLSX.read(bstr, {
@@ -360,16 +384,20 @@ const MtrlImportPage = () => {
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
       /* save data */
-      const excelDataImport = XLSX.utils.sheet_to_json(ws, {
+      let excelDataImport: any = XLSX.utils.sheet_to_json(ws, {
         header: 1,
         raw: true,
         dateNF: "yyyymmdd",
       });
-      console.log("excelDataImport", excelDataImport);
+
+      if (excelDataImport.length > 0) {
+        excelDataImport = excelDataImport.slice(1);
+      }
 
       let handledData = [];
       handledData = excelDataImport.map((row: any) => {
         return {
+          custom_id: nanoid(),
           type: row[0],
           supplier_name: row[1],
           supplier_material_name: row[2],
@@ -397,135 +425,43 @@ const MtrlImportPage = () => {
         };
       });
 
-      console.log('data:',handledData);
-      setTableData(handledData)
-    }; 
+      //* Set data for React-Tabul
+      setTableData(handledData);
+
+      //* Set Data into local storage
+      setTempImportedDataExcel(handledData);
+
+      dispatch(setEndLoading(false));
+    };
 
     reader.readAsBinaryString(file);
     // clear data in this input tag
-    inputRef.current.value = '';
+    inputRef.current.value = "";
+  };
+  //* Function Import Excel File
+
+  /**
+   * Function to save temp data
+   */
+  const handleSaveChange = () => {
+    try {
+      dispatch(setStartLoading(true));
+      setTempImportedDataExcel(tableData);
+      setTableData([...tableData]);
+
+      const numberRowsNeedSave = Object.keys(editedRows).length;
+      toast.success(`Have ${numberRowsNeedSave} saved success`);
+    } catch (error) {
+      toast.error("Save Error");
+    } finally {
+      dispatch(setEndLoading(false));
+    }
   };
 
-  const data: any = [
-    {
-      mtrl_name: "Vải B",
-      mtrl_code: "88765432",
-      supplier: "HOANG DINH HOANG",
-      season: "FW24/FW25",
-      type: "textile",
-      classification: "Double Knit Jersey",
-      epm_rating: "EPM 4",
-      composition: "60% Cotton, 40% Polyester",
-      width: '60"',
-      weight: "250",
-      price: "3.80",
-      mtrl_type: "",
-      created_dt: "2024/12/02 11:22:33",
-      created_by: "user123",
-      level: "parent",
-      _children: [
-        {
-          mtrl_code: "88765432-001",
-          created_dt: "2024/12/02 11:30:00",
-          location: "AA-01",
-          created_by: "user123",
-        },
-        {
-          mtrl_code: "88765432-002",
-          created_dt: "2024/12/02 11:45:12",
-          location: "AA-01",
-          created_by: "user123",
-        },
-      ],
-    },
-    {
-      mtrl_name: "Vai Tổng Hợp C",
-      mtrl_code: "99012345",
-      supplier: "HOANG DINH HOANG",
-      season: "SS25",
-      type: "synthetic leather",
-      classification: "PU Leather",
-      epm_rating: "EPM 3",
-      composition: "100% PU",
-      width: '58"',
-      weight: "450",
-      price: "5.20",
-      mtrl_type: "",
-      created_dt: "2024/12/03 08:55:10",
-      created_by: "admin",
-      level: "parent",
-      _children: [
-        {
-          mtrl_code: "99012345-001",
-          created_dt: "2024/12/03 09:10:20",
-          created_by: "admin",
-          location: "BB-01",
-        },
-      ],
-    },
-    {
-      mtrl_name: "Vải D",
-      mtrl_code: "11223344",
-      supplier: "HOANG DINH HOANG",
-      season: "AW24",
-      type: "textile",
-      classification: "Twill Weave",
-      epm_rating: "EPM 4",
-      composition: "70% Cotton, 30% Linen",
-      width: '56"',
-      weight: "300",
-      price: "4.15",
-      mtrl_type: "",
-      created_dt: "2024/12/04 14:01:59",
-      created_by: "designerA",
-      level: "parent",
-      _children: [
-        {
-          mtrl_code: "11223344-001",
-          created_dt: "2024/12/04 14:20:30",
-          created_by: "designerA",
-          location: "BE-01",
-        },
-        {
-          mtrl_code: "11223344-002",
-          created_dt: "2024/12/04 14:35:45",
-          created_by: "designerA",
-          location: "BE-01",
-        },
-        {
-          mtrl_code: "11223344-003",
-          created_dt: "2024/12/04 14:50:10",
-          created_by: "designerA",
-          location: "BE-01",
-        },
-      ],
-    },
-    {
-      mtrl_name: "Vải F",
-      mtrl_code: "24681357",
-      supplier: "HOANG DINH HOANG",
-      season: "FW25",
-      type: "textile",
-      classification: "Polar Fleece",
-      epm_rating: "EPM 3",
-      composition: "100% Polyester",
-      width: '62"',
-      weight: "320",
-      price: "3.95",
-      mtrl_type: "",
-      created_dt: "2024/12/06 16:45:21",
-      created_by: "user456",
-      level: "parent",
-      _children: [
-        {
-          mtrl_code: "24681357-001",
-          created_dt: "2024/12/06 17:00:05",
-          created_by: "user456",
-          location: "",
-        },
-      ],
-    },
-  ];
+  const handleClearFileExcell = () => {
+    setTempImportedDataExcel();
+    setTableData([]);
+  };
 
   /**
    * LAYOUT_HEADER: 48px
@@ -534,7 +470,7 @@ const MtrlImportPage = () => {
     <>
       <div
         className={cn(
-          `min-h-[calc(100vh-48px)] w-full p-2 flex-1 space-y-2 grid grid-rows-[auto_1fr]`
+          `h-[calc(100vh-48px)] w-full p-2 flex-1 space-y-2 grid grid-rows-[auto_1fr]`
         )}
       >
         <div className="w-full p-2 border rounded-xl shadow-lg h-auto space-y-2">
@@ -560,15 +496,32 @@ const MtrlImportPage = () => {
           </div>
 
           {/* Button helper */}
-          <div className="flex justify-end space-x-2">
-            <Button className="flex gap-1">
-              <ClipboardPlus />
-              Add New MTRL
-            </Button>
-
+          <div className="flex justify-end flex-wrap gap-1">
             <Button className="flex gap-1" onClick={handleImport}>
               <FileUp />
               Import MTRL file
+            </Button>
+
+            <Button className="flex gap-1" onClick={handleSaveChange}>
+              <SaveAll />
+              Save Change
+            </Button>
+
+            <Button className="flex gap-1" onClick={handleImport}>
+              <CloudUpload />
+              Upload File
+            </Button>
+
+            <Button className="flex gap-1" onClick={handleClearFileExcell}>
+              <Eraser />
+              Clear
+            </Button>
+
+            <Button
+              className="flex gap-1"
+              onClick={() => navigate("/admin/mtrl-management")}
+            >
+              <Undo2 />
             </Button>
 
             <input
@@ -583,7 +536,7 @@ const MtrlImportPage = () => {
 
         <div className="w-full border bg-red-50 rounded-xl shadow-lg relative overflow-x-auto">
           <ReactTabulator
-            onRef={(ref) => (ref = ref)}
+            onRef={(ref) => (tableRef.current = ref)}
             data={tableData}
             columns={columns}
             events={
@@ -594,7 +547,7 @@ const MtrlImportPage = () => {
             layout="fitColumns" // Tùy chọn layout
             options={{
               pagination: "local",
-              // paginationSize: 10,
+              // paginationSize: 20,
               // movableColumns: true,
               movableRows: false,
               dataTree: true,

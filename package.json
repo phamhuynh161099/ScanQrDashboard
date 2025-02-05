@@ -34,6 +34,7 @@
     "jsbarcode": "^3.11.6",
     "lucide-react": "^0.468.0",
     "moment": "^2.30.1",
+    "nanoid": "^5.0.9",
     "qr-scanner": "^1.4.2",
     "qrcode": "^1.5.4",
     "react": "^18.3.1",

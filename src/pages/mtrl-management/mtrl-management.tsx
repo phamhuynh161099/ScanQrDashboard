@@ -28,10 +28,20 @@ import { setStartLoading } from "@/features/loading/loadingSlice";
 import { useNavigate } from "react-router-dom";
 import LOCAL_STORAGE_NAME from "@/constants/localStorageName";
 import useLocalStorage from "@/hooks/use-local-storage";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+
+interface IMainFilter {
+  season: string | undefined;
+  material_status: string | undefined;
+}
 
 const MtrlManagementPage = () => {
   const navigate = useNavigate();
-  const [filterSeason,setFilterSeason] = useState<string|undefined>('All')
+  const [mainFilter, setMainFilter] = useState<IMainFilter>({
+    season: "All",
+    material_status: "All",
+  });
   const [tempImportedDataExcel, setTempImportedDataExcel] = useLocalStorage(
     LOCAL_STORAGE_NAME.MTRL_TEMP_IMPORTED_DATA_EXCEL,
     null
@@ -86,7 +96,7 @@ const MtrlManagementPage = () => {
 
       let _tableData = tableData.map((value: any, idx) => {
         if (value.material_code == rowData.material_code) {
-          if (value["_children"] === undefined) value["_children"] = []
+          if (value["_children"] === undefined) value["_children"] = [];
           value["_children"].push({
             mtrl_code: `${rowData.mtrl_code}-00${
               value["_children"].length + 1
@@ -112,21 +122,21 @@ const MtrlManagementPage = () => {
 
     return (
       <>
-      <>
-            <button
-              className="px-2 bg-sky-500 rounded-sm"
-              onClick={() => handleClickAddItem()}
-            >
-              Add Item
-            </button>
-            <button
-              className="ml-1 px-2 bg-yellow-500 rounded-sm"
-              onClick={() => handleClickEdit()}
-            >
-              Edit
-            </button>
-            <button className="ml-1 px-2 bg-red-500 rounded-sm">Delete</button>
-          </>
+        <>
+          <button
+            className="px-2 bg-sky-500 rounded-sm"
+            onClick={() => handleClickAddItem()}
+          >
+            Add Item
+          </button>
+          <button
+            className="ml-1 px-2 bg-yellow-500 rounded-sm"
+            onClick={() => handleClickEdit()}
+          >
+            Edit
+          </button>
+          <button className="ml-1 px-2 bg-red-500 rounded-sm">Delete</button>
+        </>
         {/* {rowLevel === "parent" && (
           <>
             <button
@@ -393,13 +403,16 @@ const MtrlManagementPage = () => {
     return result;
   };
 
+  /**
+   * Re-Render Khi Filter-Season thay doi
+   */
   useEffect(() => {
     const fetchData = async () => {
       try {
         dispatch(setStartLoading(true));
         const response = await callListMtrl();
         console.log("response", response);
-        setTableData(data);
+        // setTableData(data);
       } catch (error) {
         console.log("error:", error);
       } finally {
@@ -408,8 +421,8 @@ const MtrlManagementPage = () => {
     };
 
     //! Call api
-    // fetchData();
-  }, []);
+    fetchData();
+  }, [mainFilter]);
 
   const data: any = [
     {
@@ -532,9 +545,20 @@ const MtrlManagementPage = () => {
     },
   ];
 
-  const handleSeasonChange = (value:string) => {
-
-  }
+  const handleFilterChange = ({
+    name,
+    value,
+  }: {
+    name: string;
+    value: string;
+  }) => {
+    setMainFilter((prev: any) => {
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
+  };
 
   // const handleRowClick = (e: any, row: any) => {
   //   console.log("Row clicked:", row.getData());
@@ -553,9 +577,36 @@ const MtrlManagementPage = () => {
       >
         <div className="w-full p-2 border rounded-xl shadow-lg h-auto space-y-2">
           {/* Filter helper */}
-          <div className="grid grid-cols-2 md:grid-cols-4">
+          <div className="flex flex-wrap gap-2">
             <div>
-              <Select onValueChange={handleSeasonChange} value={filterSeason}>
+              <Label>Material Status</Label>
+              <Select
+                onValueChange={(value: string) =>
+                  handleFilterChange({ name: "material_status", value })
+                }
+                value={mainFilter.material_status}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a season" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Material Status</SelectLabel>
+                    <SelectItem value="All">All</SelectItem>
+                    <SelectItem value="Using">Using</SelectItem>
+                    <SelectItem value="Unused">Unused</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Season</Label>
+              <Select
+                onValueChange={(value: string) =>
+                  handleFilterChange({ name: "season", value })
+                }
+                value={mainFilter.season}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select a season" />
                 </SelectTrigger>
@@ -570,6 +621,8 @@ const MtrlManagementPage = () => {
               </Select>
             </div>
           </div>
+
+          <Separator className="my-1" />
 
           {/* Button helper */}
           <div className="flex justify-end space-x-2">

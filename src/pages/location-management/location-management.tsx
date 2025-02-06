@@ -191,7 +191,15 @@ const LocationManagementPage = () => {
           <div className="flex justify-end flex-wrap gap-1">
             <Button
               className="flex gap-1"
-              onClick={()=>navigate('/admin/location-management/import')}
+              onClick={() => setOpenLocationAddDialog(true)}
+            >
+              <ClipboardPlus />
+              Add New Location
+            </Button>
+
+            <Button
+              className="flex gap-1"
+              onClick={() => navigate("/admin/location-management/import")}
             >
               <FileUp />
               Import Mode

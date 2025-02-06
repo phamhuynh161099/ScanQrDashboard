@@ -29,6 +29,7 @@ import MtrlManagementPage from "./pages/mtrl-management/mtrl-management.tsx";
 import { ToastContainer } from "react-toastify";
 import MtrlImportPage from "./pages/mtrl-management/mtrl-import/mtrl-import.tsx";
 import LocationManagementPage from "./pages/location-management/location-management.tsx";
+import LocationImportPage from "./pages/location-management/location-import/location-import.tsx";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -105,7 +106,7 @@ function App() {
             },
             {
               path: "location-management/import",
-              element: <LocationManagementPage />,
+              element: <LocationImportPage />,
             },
             {
               path: "borrow-return-management",

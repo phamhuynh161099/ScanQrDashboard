@@ -54,3 +54,19 @@ export const getIdFromNameId = (nameId: string) => {
 }
 
 export const getAvatarUrl = (avatarName?: string) => (avatarName ? `${config.baseUrl}images/${avatarName}` : '')
+
+export const generateLocationCode = ({ shelf, cell }: { shelf: string, cell: string }) => {
+  let handledShelf = shelf.toUpperCase();
+  let handledCell = cell.toUpperCase();
+
+  try {
+    let checkExist = handledCell.includes(handledShelf);
+    if (checkExist) {
+      return handledCell;
+    } else {
+      return `${handledShelf}-${handledCell}`
+    }
+  } catch (error) {
+    return '';
+  }
+}

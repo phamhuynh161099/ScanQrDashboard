@@ -398,11 +398,11 @@ const LocationImportPage = () => {
               pagination: "local",
               // paginationSize: 20,
               // movableColumns: true,
-            //   groupBy: "type",
+              //   groupBy: "type",
               //   groupBy: function (data: any) {
               //     return data.type + " - " + data.shelf;
               //   },
-              movableRows: false,
+              // movableRows: false,
               dataTree: true,
               height: "100%",
               // dataTreeStartExpanded: true,

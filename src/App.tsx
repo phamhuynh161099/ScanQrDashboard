@@ -16,7 +16,6 @@ import ScanInPage from "./pages/scan-in/scan-in.tsx";
 import ScanInforPage from "./pages/scan-infor/scan-infor.tsx";
 import BorrowReturnHistoryManagement from "./pages/template/borrow-return-history-management.tsx";
 import BorrowReturnManagementPage from "./pages/template/borrow-return-management.tsx";
-import LocationManagementPage from "./pages/template/location-management.tsx";
 import MtrlManagementV2Page from "./pages/template/mtrl-mamagement-v2.tsx";
 import PrintQrPage from "./pages/template/print-qr.tsx";
 import { LocalStorageEventTarget } from "./utils/auth.ts";
@@ -29,6 +28,7 @@ import {
 import MtrlManagementPage from "./pages/mtrl-management/mtrl-management.tsx";
 import { ToastContainer } from "react-toastify";
 import MtrlImportPage from "./pages/mtrl-management/mtrl-import/mtrl-import.tsx";
+import LocationManagementPage from "./pages/location-management/location-management.tsx";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -101,6 +101,10 @@ function App() {
             },
             {
               path: "location-management",
+              element: <LocationManagementPage />,
+            },
+            {
+              path: "location-management/import",
               element: <LocationManagementPage />,
             },
             {
